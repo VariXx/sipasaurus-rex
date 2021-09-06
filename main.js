@@ -8,7 +8,7 @@ var sentStreamMessages = { };
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
-    client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
+    // client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
 });
 
 client.login(botSettings.token);
