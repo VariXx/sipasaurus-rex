@@ -18,6 +18,12 @@ async function getChannelID(channelName, clientId, token) {
     }
 }
 
+async function getStreamInfo(channelName, clientId, token) {
+    let url = `https://api.twitch.tv/helix/streams?user_login=${channelName}`;
+    const result = await twitchAPI(url, clientId, token)
+    return result.data[0];
+}
+
 async function getCurrentGame(channelID, clientId, token) {
     // this uses API v5 because helix does not show game when stream is offline
     let url = `https://api.twitch.tv/kraken/channels/${channelID}`;
@@ -67,3 +73,4 @@ module.exports.getChannelID = getChannelID;
 module.exports.getCurrentGame = getCurrentGame;
 module.exports.getStreamTitle = getStreamTitle;
 module.exports.getTwitchUserInfo = getTwitchUserInfo;
+module.exports.getStreamInfo = getStreamInfo;
