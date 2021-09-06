@@ -1,4 +1,4 @@
-const { Client, Intents, Message } = require('discord.js');
+const { Client, Intents, Message, CommandInteractionOptionResolver } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
 
@@ -15,20 +15,20 @@ client.login(botSettings.token);
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
-    if(msg.content.startsWith(botSettings.cmdPrefix)) {
-        if(msg.content.toLocaleLowerCase() == `!test`) {
-            try {
-                const msgChannel = msg.guild.channels.resolve(botSettings.notificationChannelId);
-                msgChannel.send(`Kifflom!`);
-            }
-            catch(error) {
-                console.log(error);
-            }
-            // let testMsg = await streamingEmbed('varixx', `${msg.author.username} is live`, client.user.username, client.user.avatarURL());
-            // if(testMsg !== undefined) { msg.channel.send({embeds: [testMsg]}); }
-            console.log(msg.author);
-        }
-    }
+    // if(msg.content.startsWith(botSettings.cmdPrefix)) {
+    //     if(msg.content.toLocaleLowerCase() == `!test`) { // find and mention role. ID is not the same as copy id from discord client
+    //         const roleMention = await msg.guild.roles.fetch('563995560730951681');
+    //         // console.log(roleMention);
+    //         msg.channel.send({ 
+    //             content: `hello ${roleMention}`,
+    //             allowedMentions: {roles: [roleMention.id]}
+    //         });
+    //     }
+    // }
+    // if(msg.mentions.users.hasAny(client.user.id)) { // check for mentions
+    //     msg.channel.send('huh?');
+    // }
+    // console.log(msg);
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {
@@ -83,6 +83,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             catch(error) {
                 console.log(`Couldn't find notification channel: ${error}`);
             }
+            // cleanup message when user stops streaming?
         }
     });
 });
