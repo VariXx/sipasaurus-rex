@@ -54,11 +54,12 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // console.log(newStatus);
             // console.log(act);
             // check if this is enabled for the guild and if the user is on the enabled list 
+            // check if this is twitch or anoter service
             const twitchUsername = act.url.replace('https://www.twitch.tv/', '');
             try { 
                 const actChannelManager = newStatus.guild.channels;
                 const msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
-                const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username, client.user.username, client.user.avatarURL());
+                const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
                 if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                     if(msgChannel !== null) {
                         let foundMessage = false;
