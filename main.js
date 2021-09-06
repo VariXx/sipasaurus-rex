@@ -11,7 +11,7 @@ client.once('ready', () => {
     // client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
 });
 
-client.login(botSettings.token);
+client.login(botSettings.discordToken);
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
