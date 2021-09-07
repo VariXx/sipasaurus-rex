@@ -9,6 +9,7 @@ var sentStreamMessages = { };
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
     // client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
+
 });
 
 client.login(botSettings.discordToken);
@@ -55,15 +56,15 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // console.log(act);
             // check if this is enabled for the guild and if the user is on the enabled list 
             // check if this is twitch or anoter service
-            const twitchUsername = act.url.replace('https://www.twitch.tv/', '');
+            let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
             try { 
-                const actChannelManager = newStatus.guild.channels;
-                const msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
-                const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
+                let actChannelManager = newStatus.guild.channels;
+                let msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
+                let twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
                 if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                     if(msgChannel !== null) {
                         let foundMessage = false;
-                        for(const key in sentStreamMessages) {
+                        for(let key in sentStreamMessages) {
                             if(sentStreamMessages[key].activityId == act.id) {
                                 sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 console.log(`Updated activity message`);

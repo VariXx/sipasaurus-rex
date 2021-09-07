@@ -10,7 +10,9 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         // const streamGame = await twitchApi.getCurrentGame(twitchId, botSettings.twitchClientId, botSettings.twitchToken);
         const streamInfo = await twitchApi.getStreamInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         // https://discordjs.guide/popular-topics/embeds.html#embed-preview 
-        let thumbnailUrl = streamInfo.thumbnail_url.replace('{width}x{height}.jpg', '1920x1080.jpg');
+        let timestamp = new Date(); 
+        let timestampString = `${timestamp.getHours()}${timestamp.getMinutes()}${timestamp.getSeconds()}`; // add date to thumbnail url so it's not cached
+        let thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg#${timestampString}`);
 
         const returnEmbed = new MessageEmbed()
         .setColor('#1EA8D7') // change this to use event color from channel info
