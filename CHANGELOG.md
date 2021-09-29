@@ -11,4 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial Release
 
 [0.1.0]: https://github.com/VariXx/sipasaurus-rex/tree/v0.1.0
-[Unreleased]: https://github.com/VariXx/sipasaurus-rex/compare/master...develop
+[Unreleased]: https://github.com/VariXx/sipasaurus-rex/compare/master...dev
