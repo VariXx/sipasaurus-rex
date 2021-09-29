@@ -38,7 +38,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
     // console.log(`New status:`);
     // console.log(newStatus);   
     
-    newStatus.activities.forEach( async (act) => {
+    newStatus.activities.forEach(async(act) => {
         // if(act.type == "LISTENING") {
             // let listenString = `listening to ${act.state} - ${act.details}`;
             // console.log(listenString);
@@ -51,11 +51,16 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // }
             // msgChannel.send(`Activity End`);
         // }
-        if(act.type == "STREAMING") { 
+        console.log(newStatus);
+        if(act.type == "STREAMING") {
             // console.log(newStatus);
-            // console.log(act);
-            // check if this is enabled for the guild and if the user is on the enabled list 
             // check if this is twitch or anoter service
+            if(botSettings.watchedUserId !== 'all') { // if watchedUser is not set to all 
+                if(newStatus.userId !== botSettings.watchedUserId) { // check if it's the watched user id
+                    console.log(`Activity did not come from watched user`);
+                    return; 
+                }
+            }
             let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
             try { 
                 const actChannelManager = newStatus.guild.channels;
