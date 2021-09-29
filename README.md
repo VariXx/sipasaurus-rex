@@ -4,20 +4,26 @@
 
 <!-- <img src="https://acceptdefaults.com/varibot-twitch-js/varibot.png" align="right" /> -->
 
-Sipasaurus Rex description 
-Some features include:
-- FEATURE
+Sipasaurus Rex is a discord bot that sends messages when a user is live on twitch based on the user's discord status. 
 
 ## Installation
+- Download and extract the [latest release](https://github.com/VariXx/sipasaurus-rex/releases/latest)
+- Install node (tested with 16.10.0)
+- Install dependencies `npm install` 
+- Copy `botSettings.json.example` to `botSettings.json`
+- Create a bot in the [Discord developer portal](https://discord.com/developers/applications). The bot needs **presence intent** enabled to work correctly. 
+- TO DO - Steps for getting twitch token
+- Start with `npm start` 
 
-- TO DO - install instructions
-
-## Usage
-
-- TO DO - usage
+### botSettings.json
+- **discordToken**: Discord token used by the bot. You can find this in the [Discord developer portal](https://discord.com/developers/applications). 
+- **cmdPrefix**: Command prefix used by the bot. Changing this to "/" will **not** enable slash commands. 
+- **notificationChannelId**: Discord channel ID to send streaming notification message. You can find this by enabling developer options in Discord and right clicking the channel. 
+- **twitchClientId**: Twitch client ID. This is used to pull stream information used in the message.
+- **twitchToken**: Twitch token. This is used to pull stream information used in the message.
+- **watchedUserId**: (optional) User to watch. Set to 'all' if you want the bot to send messages for all users. 
 
 ## Support
-
 [Discord server](https://discord.gg/QNppY7T) or DM `VariXx#8317`
 
 ## License
