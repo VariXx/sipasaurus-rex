@@ -51,7 +51,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // }
             // msgChannel.send(`Activity End`);
         // }
-        console.log(newStatus);
+        // console.log(newStatus);
         if(act.type == "STREAMING") {
             // console.log(newStatus);
             // check if this is twitch or anoter service
