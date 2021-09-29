@@ -1,0 +1,8 @@
+{
+    "discordToken": "",
+    "cmdPrefix": "!",
+    "notificationChannelId": "",
+    "twitchClientId": "",
+    "twitchToken": "",
+    "watchedUserId": "all"
+}
