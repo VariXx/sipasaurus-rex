@@ -123,6 +123,10 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     embeds: [twitchEmbedMsg],
                                     allowedMentions: {roles: [roleMention.id]}
                                 });                                    
+                                sentStreamMessages[act.id] = {
+                                    activityId: act.id,
+                                    msgId: streamingMsgId
+                                };                                
                                 // sentStreamMessages[key].msgId.edit({
                                 //     content: `${roleMention}`,
                                 //     embeds: [twitchEmbedMsg],
@@ -137,12 +141,11 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                             else {
                                 // sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
-                            }                            
-                            
-                            sentStreamMessages[act.id] = {
-                                activityId: act.id,
-                                msgId: streamingMsgId
-                            };
+                                sentStreamMessages[act.id] = {
+                                    activityId: act.id,
+                                    msgId: streamingMsgId
+                                };
+                            }                                                      
                             console.log(`Added activity message to json`);
                         }
                     }
