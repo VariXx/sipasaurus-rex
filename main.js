@@ -89,7 +89,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 let embedMsgContent = ``;
                                 let roleMention = ``;
                                 if(botSettings.roleToPing !== 'none') {
-                                    roleMention = await msg.guild.roles.fetch(botSettings.roleToPing);
+                                    roleMention = await newStatus.guild.roles.fetch(botSettings.roleToPing);
                                     embedMsgContent = `${roleMention}`;
                                     sentStreamMessages[key].msgId.edit({
                                         content: `${roleMention}`,
@@ -116,7 +116,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                             let embedMsgContent = ``;
                             let roleMention = ``;
                             if(botSettings.roleToPing !== 'none') {
-                                roleMention = await msg.guild.roles.fetch(botSettings.roleToPing);
+                                roleMention = await newStatus.guild.roles.fetch(botSettings.roleToPing);
                                 embedMsgContent = `${roleMention}`;
                                 const streamingMsgId = await msgChannel.send({
                                     content: `${roleMention}`,
