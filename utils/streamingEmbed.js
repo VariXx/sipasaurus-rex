@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const twitchApi = require('./twitchAPI');
+const twitchApi = require('./twitchApi');
 const botSettings = require('../botSettings.json');
 
 async function streamingEmbed(twitchUsername, msgAuthor) {
