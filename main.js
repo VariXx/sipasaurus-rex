@@ -1,4 +1,4 @@
-const { Client, Intents, Message, CommandInteractionOptionResolver } = require('discord.js');
+const { Client, Intents, Message, CommandInteractionOptionResolver, MessageEmbed } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
 
@@ -9,7 +9,6 @@ var sentStreamMessages = { };
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
     // client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
-
 });
 
 client.login(botSettings.discordToken);
@@ -18,12 +17,33 @@ client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
     // if(msg.content.startsWith(botSettings.cmdPrefix)) {
     //     if(msg.content.toLocaleLowerCase() == `!test`) { // find and mention role. ID is not the same as copy id from discord client
-    //         const roleMention = await msg.guild.roles.fetch('563995560730951681');
+    //         // const roleMention = await msg.guild.roles.fetch('874425035635454022');
     //         // console.log(roleMention);
-    //         msg.channel.send({ 
-    //             content: `hello ${roleMention}`,
-    //             allowedMentions: {roles: [roleMention.id]}
-    //         });
+    //         const returnEmbed = new MessageEmbed()
+    //         .setColor('#1EA8D7') // change this to use event color from channel info
+    //         .setTitle(`Test message`)
+    //         .setURL(`https://varibot.net`) // change this to get from chnanel info
+    //         .setAuthor(`author`)
+    //         .setDescription(`description`)
+    //         // .setThumbnail(twitchInfo.profile_image_url)
+    //         .setImage(`https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2FE4UZu0AyPIs%2Fmaxresdefault.jpg&f=1&nofb=1`)
+    //         .setTimestamp()
+    //         .setFooter(`Last updated`);
+
+    //         let embedMsgContent = ``;
+    //         let roleMention = ``;
+    //         if(botSettings.roleToPing !== 'none') {
+    //             roleMention = await msg.guild.roles.fetch(botSettings.roleToPing);
+    //             embedMsgContent = `${roleMention}`;
+    //             msg.channel.send({ 
+    //                 content: `${roleMention}`,
+    //                 embeds: [returnEmbed],
+    //                 allowedMentions: {roles: [roleMention.id]}
+    //             });                
+    //         }
+    //         else {
+    //             msg.channel.send({embeds: [returnEmbed]});                                
+    //         }
     //     }
     // }
     // if(msg.mentions.users.hasAny(client.user.id)) { // check for mentions
@@ -32,12 +52,7 @@ client.on('messageCreate', async (msg) => {
     // console.log(msg);
 });
 
-client.on('presenceUpdate', async (oldStatus, newStatus) => {
-    // console.log(`Old status:`);
-    // console.log(oldStatus);
-    // console.log(`New status:`);
-    // console.log(newStatus);   
-    
+client.on('presenceUpdate', async (oldStatus, newStatus) => {   
     newStatus.activities.forEach(async(act) => {
         // if(act.type == "LISTENING") {
             // let listenString = `listening to ${act.state} - ${act.details}`;
@@ -53,7 +68,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
         // }
         // console.log(newStatus);
         if(act.type == "STREAMING") {
-            // console.log(newStatus);
+            console.log(newStatus);
             // check if this is twitch or anoter service
             if(botSettings.watchedUserId !== 'all') { // if watchedUser is not set to all 
                 if(newStatus.userId !== botSettings.watchedUserId) { // check if it's the watched user id
@@ -71,13 +86,59 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                         let foundMessage = false;
                         for(const key in sentStreamMessages) {
                             if(sentStreamMessages[key].activityId == act.id) {
-                                sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
+                                let embedMsgContent = ``;
+                                let roleMention = ``;
+                                if(botSettings.roleToPing !== 'none') {
+                                    roleMention = await msg.guild.roles.fetch(botSettings.roleToPing);
+                                    embedMsgContent = `${roleMention}`;
+                                    sentStreamMessages[key].msgId.edit({
+                                        content: `${roleMention}`,
+                                        embeds: [twitchEmbedMsg],
+                                        allowedMentions: {roles: [roleMention.id]}
+                                    });                                    
+                                    // msg.channel.send({ 
+                                    //     content: `${roleMention}`,
+                                    //     embeds: [twitchEmbedMsg],
+                                    //     allowedMentions: {roles: [roleMention.id]}
+                                    // });                
+                                }
+                                else {
+                                    sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
+                                }                                
+                                // sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 console.log(`Updated activity message`);
                                 foundMessage = true;
                             }
                         }
                         if(!foundMessage){
-                            const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
+                            // const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
+                            
+                            let embedMsgContent = ``;
+                            let roleMention = ``;
+                            if(botSettings.roleToPing !== 'none') {
+                                roleMention = await msg.guild.roles.fetch(botSettings.roleToPing);
+                                embedMsgContent = `${roleMention}`;
+                                const streamingMsgId = await msgChannel.send({
+                                    content: `${roleMention}`,
+                                    embeds: [twitchEmbedMsg],
+                                    allowedMentions: {roles: [roleMention.id]}
+                                });                                    
+                                // sentStreamMessages[key].msgId.edit({
+                                //     content: `${roleMention}`,
+                                //     embeds: [twitchEmbedMsg],
+                                //     allowedMentions: {roles: [roleMention.id]}
+                                // });                                    
+                                // msg.channel.send({ 
+                                //     content: `${roleMention}`,
+                                //     embeds: [twitchEmbedMsg],
+                                //     allowedMentions: {roles: [roleMention.id]}
+                                // });                
+                            }
+                            else {
+                                // sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
+                                const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
+                            }                            
+                            
                             sentStreamMessages[act.id] = {
                                 activityId: act.id,
                                 msgId: streamingMsgId

@@ -2,6 +2,7 @@
     "discordToken": "",
     "cmdPrefix": "!",
     "notificationChannelId": "",
+    "roleToPing": "none",
     "twitchClientId": "",
     "twitchToken": "",
     "watchedUserId": "all"
