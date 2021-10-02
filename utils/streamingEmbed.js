@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, Util } = require('discord.js');
 const twitchApi = require('./twitchApi');
 const botSettings = require('../botSettings.json');
 
@@ -13,10 +13,11 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         const timestamp = new Date(); 
         const timestampString = `${timestamp.getHours()}${timestamp.getMinutes()}${timestamp.getSeconds()}`; // add date to thumbnail url so it's not cached
         const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg#${timestampString}`);
+        let streamTitle = Util.escapeMarkdown(streamInfo.title);
 
         const returnEmbed = new MessageEmbed()
         .setColor('#1EA8D7') // change this to use event color from channel info
-        .setTitle(streamInfo.title)
+        .setTitle(streamTitle)
         .setURL(`https://twitch.tv/${twitchInfo.display_name}`) // change this to get from chnanel info
         .setAuthor(`${msgAuthor} is live`)
         .setDescription(streamInfo.game_name)
