@@ -1,4 +1,4 @@
-const { Client, Intents, Message, CommandInteractionOptionResolver, MessageEmbed } = require('discord.js');
+const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
 
