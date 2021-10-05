@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.1.0] - YYYY-MM-DDD
+## [0.1.0] - 2021-10-04
 ### Initial Release
 
 [0.1.0]: https://github.com/VariXx/sipasaurus-rex/tree/v0.1.0
