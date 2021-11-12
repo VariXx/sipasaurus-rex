@@ -63,8 +63,8 @@ async function getGameName(findGameID) {
     }
 }
 
-async function getTwitchUserInfo(userId, clientId, token) {
-    let url = `https://api.twitch.tv/helix/users?id=${userId}`;
+async function getTwitchUserInfo(twitchUsername, clientId, token) {
+    let url = `https://api.twitch.tv/helix/users?login=${twitchUsername}`;
     const result = await twitchAPI(url, clientId, token);
     return result.data[0];
 }

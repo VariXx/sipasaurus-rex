@@ -4,8 +4,8 @@ const botSettings = require('../botSettings.json');
 
 async function streamingEmbed(twitchUsername, msgAuthor) {
     try {
-        const twitchId = await twitchApi.getChannelID(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
-        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchId, botSettings.twitchClientId, botSettings.twitchToken);
+        // const twitchId = await twitchApi.getChannelID(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         const streamInfo = await twitchApi.getStreamInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         let urlTimestamp = Date.now();
         const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg#${urlTimestamp}`);
