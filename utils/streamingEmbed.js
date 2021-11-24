@@ -8,7 +8,7 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         const streamInfo = await twitchApi.getStreamInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         let urlTimestamp = Date.now();
-        const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg#${urlTimestamp}`);
+        const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg?${urlTimestamp}`);
         let streamTitle = Util.escapeMarkdown(streamInfo.title);
         let channelUrl = `https://twitch.tv/${twitchInfo.display_name}`;
 
