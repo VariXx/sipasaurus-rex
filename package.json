@@ -7,7 +7,7 @@
     "run": "node main.js",
     "start": "node main.js"
   },
-  "author": "",
+  "author": "Aaron Osterwyk",
   "license": "Apache-2.0",
   "dependencies": {
     "discord.js": "^13.1.0",
