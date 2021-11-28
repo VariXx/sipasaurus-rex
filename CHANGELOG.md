@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.3.0] - 2021-11-25
+## [0.3.0] - 2021-11-28
 ### Added
 - Added verison number to activity message
 
