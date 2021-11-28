@@ -1,6 +1,7 @@
 const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
+const version = require('./package.json').version;
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
@@ -8,7 +9,8 @@ var sentStreamMessages = { };
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
-    // client.user.setActivity({name: 'your streaming status', type: 'WATCHING'});
+    client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
+    // client.user.setActivity({name: `${version}`, type: 'PLAYING'});
 });
 
 client.login(botSettings.discordToken);
