@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2021-11-28
 ### Added
-- Added verison number to activity message
+- Added version number to activity message
 
 ### Removed
 - Removed twitch API v5 functions
