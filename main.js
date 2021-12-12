@@ -1,16 +1,25 @@
 const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
+const { log } = require('./utils/log');
 const version = require('./package.json').version;
+const logLevel = require('./botSettings.json').logLevel;
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
 var sentStreamMessages = { };
+let logChannel = null;
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
     client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
     // client.user.setActivity({name: `${version}`, type: 'PLAYING'});
+    if(botSettings.logChannel.length > 1) {
+        logChannel = client.channels.resolve(botSettings.logChannel);    
+        console.log(`Found log channel ${logChannel}`);
+        if(logLevel > 2) { log(logChannel, `Connected`); }
+    }
+    else { console.log(`Log channel not set, skipping lookup`); }
 });
 
 client.login(botSettings.discordToken);
@@ -60,7 +69,8 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 else {
                                     sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 }                                
-                                console.log(`Updated activity message`);
+                                if(logLevel > 2) { log(logChannel, `Updated activity message`); }
+                                else { console.log(`Updated activity message`); }
                                 foundMessage = true;
                             }
                         }
@@ -87,13 +97,16 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     msgId: streamingMsgId
                                 };
                             }                                                      
-                            console.log(`Added activity message to json`);
+                            if(logLevel > 2) { log(logChannel, `Added activity message to json`); }
+                            else { console.log(`Added activity message to json`); }
                         }
                     }
                 }                
             }
             catch(error) {
-                console.log(`Couldn't find notification channel: ${error}`);
+                // console.log(`Couldn't find notification channel: ${error}`);
+                if(logLevel > 2) { log(logChannel, `Couldn't find notification channel: ${error}`); }
+                else { console.log(`Couldn't find notification channel: ${error}`); } 
             }
             // cleanup message when user stops streaming?
         }

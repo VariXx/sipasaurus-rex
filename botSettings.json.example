@@ -5,5 +5,7 @@
     "roleToPing": "none",
     "twitchClientId": "",
     "twitchToken": "",
-    "watchedUserId": "all"
+    "watchedUserId": "all",
+    "logChannel": "",
+    "logLevel": "3"
 }
