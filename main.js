@@ -15,7 +15,7 @@ client.once('ready', () => {
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
-        log('info', logChannel, `Connected`);
+        // log('info', logChannel, `Connected`);
     }
     else { console.log(`Log channel not set, skipping lookup`); }
 });
