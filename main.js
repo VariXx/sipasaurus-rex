@@ -29,7 +29,7 @@ client.on('messageCreate', async (msg) => {
     // if(msg.author.id == botSettings.botOwnerID) {
     //     if(msg.content == 'sipatest') {
     //         try {
-    //             const twitchTestEmbedMsg = await streamingEmbed('varixx', msg.author);
+    //             const twitchTestEmbedMsg = await streamingEmbed('rifftrax', msg.author.username);
     //             await msg.channel.send({embeds: [twitchTestEmbedMsg]});
     //         }
     //         catch(error) {
