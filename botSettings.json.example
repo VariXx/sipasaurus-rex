@@ -7,5 +7,6 @@
     "twitchToken": "",
     "watchedUserId": "all",
     "logChannel": "",
-    "logLevel": "3"
+    "logLevel": "3",
+    "botOwnerID": ""
 }

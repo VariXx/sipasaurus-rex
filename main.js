@@ -3,7 +3,6 @@ const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
-const logLevel = require('./botSettings.json').logLevel;
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
@@ -13,11 +12,10 @@ let logChannel = null;
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
     client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
-    // client.user.setActivity({name: `${version}`, type: 'PLAYING'});
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
-        if(logLevel > 2) { log(logChannel, `Connected`); }
+        log('info', logChannel, `Connected`);
     }
     else { console.log(`Log channel not set, skipping lookup`); }
 });
@@ -26,6 +24,19 @@ client.login(botSettings.discordToken);
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
+    
+    // test command
+    // if(msg.author.id == botSettings.botOwnerID) {
+    //     if(msg.content == 'sipatest') {
+    //         try {
+    //             const twitchTestEmbedMsg = await streamingEmbed('varixx', msg.author);
+    //             await msg.channel.send({embeds: [twitchTestEmbedMsg]});
+    //         }
+    //         catch(error) {
+    //             log('error', logChannel, `Error creating embed message: ${error}`);
+    //         }            
+    //     }
+    // }
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {   
@@ -41,7 +52,8 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // check if this is twitch or anoter service
             if(botSettings.watchedUserId !== 'all') { // if watchedUser is not set to all 
                 if(newStatus.userId !== botSettings.watchedUserId) { // check if it's the watched user id
-                    console.log(`Activity did not come from watched user`);
+                    // console.log(`Activity did not come from watched user`);
+                    log('info', logChannel, `Activity did not come from watched user`);
                     return; 
                 }
             }
@@ -49,7 +61,12 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             try { 
                 const actChannelManager = newStatus.guild.channels;
                 const msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
-                const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
+                try {
+                    const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
+                }
+                catch(error) {
+                    log('error', logChannel, `Error creating embed message: ${error}`);
+                }
                 if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                     if(msgChannel !== null) {
                         let foundMessage = false;
@@ -69,8 +86,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 else {
                                     sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 }                                
-                                if(logLevel > 2) { log(logChannel, `Updated activity message`); }
-                                else { console.log(`Updated activity message`); }
+                                log('info', logChannel, `Updated activity message`);
                                 foundMessage = true;
                             }
                         }
@@ -80,33 +96,41 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                             if(botSettings.roleToPing !== 'none') {
                                 roleMention = await newStatus.guild.roles.fetch(botSettings.roleToPing);
                                 embedMsgContent = `${roleMention}`;
-                                const streamingMsgId = await msgChannel.send({
-                                    content: `${roleMention}`,
-                                    embeds: [twitchEmbedMsg],
-                                    allowedMentions: {roles: [roleMention.id]}
-                                });                                    
-                                sentStreamMessages[act.id] = {
-                                    activityId: act.id,
-                                    msgId: streamingMsgId
-                                };                                
+                                try {
+                                    const streamingMsgId = await msgChannel.send({
+                                        content: `${roleMention}`,
+                                        embeds: [twitchEmbedMsg],
+                                        allowedMentions: {roles: [roleMention.id]}
+                                    });                                    
+                                    sentStreamMessages[act.id] = {
+                                        activityId: act.id,
+                                        msgId: streamingMsgId
+                                    };       
+                                }
+                                catch(error) {
+                                    log('error', logChannel, `Error updating embed message: ${error}`);
+                                }                                                         
                             }
-                            else {
+                        }
+                        else {
+                            try {
                                 const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
                                     msgId: streamingMsgId
-                                };
-                            }                                                      
-                            if(logLevel > 2) { log(logChannel, `Added activity message to json`); }
-                            else { console.log(`Added activity message to json`); }
+                                };                                               
+                                log('info', logChannel, `Added activity message to json`);
+                            }
+                            catch(error) {
+                                log('error', logChannel, `Error updating embed message: ${error}`);
+                            }
                         }
                     }
                 }                
             }
             catch(error) {
                 // console.log(`Couldn't find notification channel: ${error}`);
-                if(logLevel > 2) { log(logChannel, `Couldn't find notification channel: ${error}`); }
-                else { console.log(`Couldn't find notification channel: ${error}`); } 
+                log('error', logChannel, `Couldn't find notification channel: ${error}`);
             }
             // cleanup message when user stops streaming?
         }
