@@ -4,6 +4,8 @@ const { streamingEmbed } = require('./utils/streamingEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 
+const { getTwichClips } = require('./utils/twitchApi');
+
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
 var sentStreamMessages = { };
@@ -26,17 +28,30 @@ client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
     
     // test command
-    // if(msg.author.id == botSettings.botOwnerID) {
-    //     if(msg.content == 'sipatest') {
-    //         try {
-    //             const twitchTestEmbedMsg = await streamingEmbed('rifftrax', msg.author.username);
-    //             await msg.channel.send({embeds: [twitchTestEmbedMsg]});
-    //         }
-    //         catch(error) {
-    //             log('error', logChannel, `Error creating embed message: ${error}`);
-    //         }            
-    //     }
-    // }
+    if(msg.author.id == botSettings.botOwnerID) {
+        if(msg.content == 'sipatest') { // clips test, move this to a function when done testing
+            try {
+                let clipsResult = await getTwichClips('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+                console.log(clipsResult);
+                clipsResult.forEach(clip => {
+                    console.log(clip.url);
+                    // log('info', logChannel, `${clip.url}`);
+                    // check if clip has already been sent (text file?)
+                    // send if it hasn't been sent and add to text file 
+                });
+            }
+            catch(error) {
+                console.log(error);
+            }
+            // try {
+            //     const twitchTestEmbedMsg = await streamingEmbed('rifftrax', msg.author.username);
+            //     await msg.channel.send({embeds: [twitchTestEmbedMsg]});
+            // }
+            // catch(error) {
+            //     log('error', logChannel, `Error creating embed message: ${error}`);
+            // }            
+        }
+    }
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {   
