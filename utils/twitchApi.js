@@ -26,7 +26,8 @@ async function getTwichClips(twitchUsername, clientId, token) {
     let clipEndTimeISO = clipEndTime.toISOString();
 
     const twitchUserInfo = await getTwitchUserInfo(twitchUsername, clientId, token);
-    let url = `https://api.twitch.tv/helix/clips?broadcaster_id=${twitchUserInfo.id}&started_at=${clipStartTimeISO}&ended_at${clipEndTimeISO}`;
+    let url = `https://api.twitch.tv/helix/clips?broadcaster_id=${twitchUserInfo.id}&started_at=${clipStartTimeISO}&ended_at=${clipEndTimeISO}`;
+    console.log(url);
     const result = await twitchAPI(url, clientId, token);
     return result.data;
 }
