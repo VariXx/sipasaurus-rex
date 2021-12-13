@@ -67,7 +67,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // check if this is twitch or anoter service
             if(botSettings.watchedUserId !== 'all') { // if watchedUser is not set to all 
                 if(newStatus.userId !== botSettings.watchedUserId) { // check if it's the watched user id
-                    // console.log(`Activity did not come from watched user`);
+                    console.log(`Activity did not come from watched user`);
                     log('info', logChannel, `Activity did not come from watched user`);
                     return; 
                 }
@@ -96,6 +96,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 else {
                                     sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                 }                                
+                                console.log(`Updated activity message`);
                                 log('info', logChannel, `Updated activity message`);
                                 foundMessage = true;
                             }
@@ -106,34 +107,25 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                             if(botSettings.roleToPing !== 'none') {
                                 roleMention = await newStatus.guild.roles.fetch(botSettings.roleToPing);
                                 embedMsgContent = `${roleMention}`;
-                                try {
-                                    const streamingMsgId = await msgChannel.send({
-                                        content: `${roleMention}`,
-                                        embeds: [twitchEmbedMsg],
-                                        allowedMentions: {roles: [roleMention.id]}
-                                    });                                    
-                                    sentStreamMessages[act.id] = {
-                                        activityId: act.id,
-                                        msgId: streamingMsgId
-                                    };       
-                                }
-                                catch(error) {
-                                    log('error', logChannel, `Error updating embed message: ${error}`);
-                                }                                                         
+                                const streamingMsgId = await msgChannel.send({
+                                    content: `${roleMention}`,
+                                    embeds: [twitchEmbedMsg],
+                                    allowedMentions: {roles: [roleMention.id]}
+                                });                                    
+                                sentStreamMessages[act.id] = {
+                                    activityId: act.id,
+                                    msgId: streamingMsgId
+                                };                                
                             }
-                        }
-                        else {
-                            try {
+                            else {
                                 const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
                                     msgId: streamingMsgId
-                                };                                               
-                                log('info', logChannel, `Added activity message to json`);
-                            }
-                            catch(error) {
-                                log('error', logChannel, `Error updating embed message: ${error}`);
-                            }
+                                };
+                            }                                                      
+                            console.log(`Added activity message to json`);
+                            log('info', logChannel, `Added activity message to json`);
                         }
                     }
                 }                
