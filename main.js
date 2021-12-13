@@ -139,7 +139,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                 }                
             }
             catch(error) {
-                // console.log(`Couldn't find notification channel: ${error}`);
+                console.log(`Couldn't find notification channel: ${error}`);
                 log('error', logChannel, `Couldn't find notification channel: ${error}`);
             }
             // cleanup message when user stops streaming?
