@@ -10,19 +10,10 @@ Sipasaurus Rex is a discord bot that sends messages when a user is live on twitc
 - Download and extract the [latest release](https://github.com/aosterwyk/sipasaurus-rex/releases/latest)
 - Install node (tested with 16.10.0)
 - Install dependencies `npm install` 
-- Copy `botSettings.json.example` to `botSettings.json` (see [botSettings section](#botsettingsjson) for settings)
+- Copy `botSettings.json.example` to `botSettings.json` (see [botSettings section](./botsettings.json) for settings)
 - Create a bot in the [Discord developer portal](https://discord.com/developers/applications). The bot needs **presence intent** enabled to work correctly. 
 - [Register a Twitch application](https://dev.twitch.tv/docs/api/) to get a Twitch client ID and token.
 - Start with `npm start` 
-
-### botSettings.json
-- **discordToken**: Discord token used by the bot. You can find this in the [Discord developer portal](https://discord.com/developers/applications). 
-- **cmdPrefix**: Command prefix used by the bot. Changing this to "/" will **not** enable slash commands. 
-- **notificationChannelId**: Discord channel ID to send streaming notification message. You can find this by enabling developer options in Discord and right clicking the channel. 
-- **roleToPing**: (optional) Role to ping in streaming notification message. Set to "none" for no role mention. You can find this by opening the roles list in server settings and clicking "Copy ID" in the role options.
-- **twitchClientId**: Twitch client ID. This is used to pull stream information used in the message.
-- **twitchToken**: Twitch token. This is used to pull stream information used in the message.
-- **watchedUserId**: (optional) User to watch. Set to "all" if you want the bot to send messages for all users. 
 
 ## Support
 [Discord server](https://discord.gg/QNppY7T) or DM `VariXx#8317`
