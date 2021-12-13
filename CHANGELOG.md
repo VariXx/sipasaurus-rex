@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
+## [0.4.0] - 2021-12-
+### Added
+- Added logging to Discord channel
+
 ## [0.3.0] - 2021-11-28
 ### Added
 - Added version number to activity message
@@ -26,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2021-10-04
 ### Initial Release
 
+[0.3.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.4.0
 [0.3.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.3.0
 [0.2.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.2.0
 [0.1.1]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.1.1
