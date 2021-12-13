@@ -10,7 +10,7 @@ Sipasaurus Rex is a discord bot that sends messages when a user is live on twitc
 - Download and extract the [latest release](https://github.com/aosterwyk/sipasaurus-rex/releases/latest)
 - Install node (tested with 16.10.0)
 - Install dependencies `npm install` 
-- Copy `botSettings.json.example` to `botSettings.json` (see [botSettings.md](./botsettings.md) for settings)
+- Copy `botSettings.json.example` to `botSettings.json` (see [botSettings.md](./botSettings.md) for settings)
 - Create a bot in the [Discord developer portal](https://discord.com/developers/applications). The bot needs **presence intent** enabled to work correctly. 
 - [Register a Twitch application](https://dev.twitch.tv/docs/api/) to get a Twitch client ID and token.
 - Start with `npm start` 
