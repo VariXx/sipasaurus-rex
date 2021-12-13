@@ -76,12 +76,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             try { 
                 const actChannelManager = newStatus.guild.channels;
                 const msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
-                try {
-                    const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
-                }
-                catch(error) {
-                    log('error', logChannel, `Error creating embed message: ${error}`);
-                }
+                const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
                 if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                     if(msgChannel !== null) {
                         let foundMessage = false;
