@@ -74,6 +74,9 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             }
             let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
             try { 
+                if(botSettings.twitchToken === null || botSettings.twitchToken.length < 1 || botSettings.twitchToken == undefined) {
+                    throw "Twitch token in bot settings invalid";
+                }
                 const actChannelManager = newStatus.guild.channels;
                 const msgChannel = actChannelManager.resolve(botSettings.notificationChannelId);
                 const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
