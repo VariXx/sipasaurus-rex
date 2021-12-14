@@ -74,7 +74,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             }
             let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
             try { 
-                if(botSettings.twitchToken === null || botSettings.twitchToken.length < 1 || botSettings.twitchToken == undefined) {
+                if(botSettings.twitchToken == undefined || botSettings.twitchToken === null || botSettings.twitchToken.length < 5) {
                     throw "Twitch token in bot settings invalid";
                 }
                 const actChannelManager = newStatus.guild.channels;
