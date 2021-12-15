@@ -51,6 +51,7 @@ client.once('ready', () => {
     if(botSettings.checkTwitchClips) {
         if(botSettings.discordClipsChannel.length > 1) {
             discordClipsChannel = client.channels.resolve(botSettings.discordClipsChannel);
+            console.log(`Found clips channel ${discordClipsChannel}`);
             clipsCheckTime = botSettings.clipsCheckTime*60000;
             // clipsCheckTime = 60000;
             clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);
