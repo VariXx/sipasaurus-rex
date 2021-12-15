@@ -20,7 +20,7 @@ async function checkTwitchClips() {
         let clipsResult = await getTwichClips(botSettings.twitchClipsChannel, botSettings.twitchClientId, botSettings.twitchToken);
         const clipList = await getClipList();
         clipsResult.forEach(async (clip) => {
-            console.log(clip.id);
+            // console.log(clip.id);
             let foundClip = false;
             if(clipList !== undefined) {
                 if(clipList.includes(clip.id)) {
