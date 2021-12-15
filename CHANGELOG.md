@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added logging to Discord channel
 - Added checking for invalid twitch token in settings
+- Added posting new Twitch clips to a Discord channel
 
 ## [0.3.0] - 2021-11-28
 ### Added

@@ -20,7 +20,7 @@ async function getTwitchUserInfo(twitchUsername, clientId, token) {
 
 async function getTwichClips(twitchUsername, clientId, token) {
     let clipStartTime = new Date();
-    clipStartTime.setDate(clipStartTime.getDate() - 14);
+    clipStartTime.setDate(clipStartTime.getDate() - 30);
     let clipStartTimeISO = clipStartTime.toISOString();
     let clipEndTime = new Date();
     let clipEndTimeISO = clipEndTime.toISOString();

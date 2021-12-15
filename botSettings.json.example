@@ -8,5 +8,9 @@
     "watchedUserId": "all",
     "logChannel": "",
     "logLevel": "3",
-    "botOwnerID": ""
+    "botOwnerID": "",
+    "checkTwitchClips": false,
+    "twitchClipsChannel": "",
+    "discordClipsChannel": "",
+    "clipsCheckTime": 60
 }

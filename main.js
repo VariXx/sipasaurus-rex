@@ -3,13 +3,42 @@ const botSettings = require('./botSettings.json');
 const { streamingEmbed } = require('./utils/streamingEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
+const { getClipList, addClip } = require('./utils/clipList');
 
 const { getTwichClips } = require('./utils/twitchApi');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
 var sentStreamMessages = { };
-let logChannel = null;
+var logChannel = null;
+var discordClipsChannel = null;
+var clipsCheckTime = 60*60000; // default to 1 hour
+var clipsChecker; 
+
+async function checkTwitchClips() {
+    try {
+        let clipsResult = await getTwichClips(botSettings.twitchClipsChannel, botSettings.twitchClientId, botSettings.twitchToken);
+        const clipList = await getClipList();
+        clipsResult.forEach(async (clip) => {
+            console.log(clip.id);
+            let foundClip = false;
+            if(clipList !== undefined) {
+                if(clipList.includes(clip.id)) {
+                    console.log(`Found clip ${clip.id} in list, skipping.`);
+                    log('info', logChannel, `Found clip ${clip.id} in list, skipping.`);
+                    foundClip = true;
+                }
+            }
+            if(!foundClip) {
+                await addClip(clip.id);
+                logChannel.send(`${clip.url}`);
+            }
+        });
+    }
+    catch(error) {
+        console.log(error);
+    }    
+}
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
@@ -17,9 +46,18 @@ client.once('ready', () => {
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
-        // log('info', logChannel, `Connected`);
     }
-    else { console.log(`Log channel not set, skipping lookup`); }
+    else { console.log(`Log channel not set, skipping lookup`); }    
+    if(botSettings.checkTwitchClips) {
+        if(botSettings.discordClipsChannel.length > 1) {
+            discordClipsChannel = client.channels.resolve(botSettings.discordClipsChannel);
+            clipsCheckTime = botSettings.clipsCheckTime*60000;
+            // clipsCheckTime = 60000;
+            clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);
+        }
+        else { console.log(`Twitch clips channel not set, skipping lookup`); }    
+    }
+    else { console.log(`checkTwitchClips not enabled, skipping.`); }    
 });
 
 client.login(botSettings.discordToken);
@@ -29,28 +67,32 @@ client.on('messageCreate', async (msg) => {
     
     // test command
     if(msg.author.id == botSettings.botOwnerID) {
-        if(msg.content == 'sipatest') { // clips test, move this to a function when done testing
-            try {
-                let clipsResult = await getTwichClips('varixx', botSettings.twitchClientId, botSettings.twitchToken);
-                console.log(clipsResult);
-                clipsResult.forEach(clip => {
-                    console.log(clip.url);
-                    // log('info', logChannel, `${clip.url}`);
-                    // check if clip has already been sent (text file?)
-                    // send if it hasn't been sent and add to text file 
-                });
-            }
-            catch(error) {
-                console.log(error);
-            }
-            // try {
-            //     const twitchTestEmbedMsg = await streamingEmbed('rifftrax', msg.author.username);
-            //     await msg.channel.send({embeds: [twitchTestEmbedMsg]});
-            // }
-            // catch(error) {
-            //     log('error', logChannel, `Error creating embed message: ${error}`);
-            // }            
-        }
+        // if(msg.content == 'st') { // clips test, move this to a function when done testing
+        //     if(botSettings.postTwitchClips) { 
+        //         try {
+        //             let clipsResult = await getTwichClips('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+        //             const clipList = await getClipList();
+        //             clipsResult.forEach(async (clip) => {
+        //                 console.log(clip.id);
+        //                 let foundClip = false;
+        //                 if(clipList !== undefined) {
+        //                     if(clipList.includes(clip.id)) {
+        //                         console.log(`Found clip ${clip.id} in list, skipping.`);
+        //                         log('info', logChannel, `Found clip ${clip.id} in list, skipping.`);
+        //                         foundClip = true;
+        //                     }
+        //                 }
+        //                 if(!foundClip) {
+        //                     await addClip(clip.id);
+        //                     logChannel.send(`${clip.url}`);
+        //                 }
+        //             });
+        //         }
+        //         catch(error) {
+        //             console.log(error);
+        //         }
+        //     }
+        // }
     }
 });
 
