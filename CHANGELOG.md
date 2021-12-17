@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.4.0] - 2021-12-
+## [0.4.0] - 2021-12-17
 ### Added
 - Added logging to Discord channel
 - Added checking for invalid twitch token in settings
