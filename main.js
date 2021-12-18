@@ -31,7 +31,7 @@ async function checkTwitchClips() {
             }
             if(!foundClip) {
                 await addClip(clip.id);
-                logChannel.send(`${clip.url}`);
+                discordClipsChannel.send(`${clip.url}`);
             }
         });
     }
