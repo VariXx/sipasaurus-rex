@@ -5,7 +5,7 @@ const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 
-const { getTwichClips } = require('./utils/twitchApi');
+const { getTwichClips, getStreamMakers } = require('./utils/twitchApi');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
@@ -94,6 +94,34 @@ client.on('messageCreate', async (msg) => {
         //         }
         //     }
         // }
+        if(msg.content == 'createMessage') {
+            if(botSettings.notificationChannelId) {
+                try {
+                    // let testMsgChannel = msg.channel.resolve(botSettings.notificationChannelId);
+                    let testStreamMsg = await streamingEmbed('mst3k', msg.author.id);
+                    msg.channel.send({embeds: [testStreamMsg]});
+               }
+               catch(erorr){ 
+                   console.log(`Error: ${error}`);
+               }
+            }
+        }
+        if(msg.content == 'umsg') {
+            try {
+
+            }
+            catch(error) {
+                console.log(error);
+            }
+        }
+        if(msg.content == 'mtest') {
+            try {
+                await getStreamMakers('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+            }
+            catch(error) {
+                console.log(error);
+            }
+        }
     }
 });
 

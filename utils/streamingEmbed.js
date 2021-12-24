@@ -30,4 +30,26 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
     }
 }
 
+async function doneStreamingEmbed(msgId, twitchUsername, msgAuthor) {
+    try {
+        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        let channelUrl = `https://twitch.tv/${twitchInfo.display_name}`;
+
+        const returnEmbed = new MessageEmbed() 
+        .setTitle(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
+        // .setDescription(`Put stream markers here`)
+        .setThumbnail(twitchInfo.profile_image_url)
+        .setImage(twitchInfo.offline_image_url)
+        .setTimestamp()
+        .setFooter(`Last updated`);
+    
+        return returnEmbed;
+    }
+    catch(error) {
+        console.log(`Error updating embed: ${error}`);
+        return undefined;
+    }
+}
+
 module.exports.streamingEmbed = streamingEmbed;
+module.exports.doneStreamingEmbed = doneStreamingEmbed;
