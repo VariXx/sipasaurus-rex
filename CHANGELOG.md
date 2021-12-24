@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
+## [0.5.0] - 2021-12-
+### Added 
+- Added editing messages when stream goes offline
+- Added stream markers for offline message. **You will need to create a new token with new scopes for this feature**. 
+
 ## [0.4.1] - 2021-12-17
 ### Fixed
 - Fixed channel used for sending clip links
@@ -36,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2021-10-04
 ### Initial Release
 
+[0.5.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.5.0
 [0.4.1]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.4.1
 [0.4.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.4.0
 [0.3.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.3.0
