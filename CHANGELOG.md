@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 - Added editing messages when stream goes offline
 - Added stream markers for offline message. **You will need to create a new token with new scopes for this feature**. 
+- Added command for creating twitch token 
 
 ## [0.4.1] - 2021-12-17
 ### Fixed

@@ -65,9 +65,12 @@ client.login(botSettings.discordToken);
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
-    
     // test command
     if(msg.author.id == botSettings.botOwnerID) {
+        if(msg.content == 'twitchToken') {
+            const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
+            msg.channel.send(tokenUrl);
+        }
         // if(msg.content == 'st') { // clips test, move this to a function when done testing
         //     if(botSettings.postTwitchClips) { 
         //         try {
