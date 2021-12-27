@@ -1,11 +1,11 @@
 const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
-const { streamingEmbed } = require('./utils/streamingEmbed');
+const { streamingEmbed, doneStreamingEmbed } = require('./utils/streamingEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 
-const { getTwichClips, getStreamMakers } = require('./utils/twitchApi');
+const { getTwichClips, getStreamMakers, getTwitchVideos } = require('./utils/twitchApi');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
@@ -99,28 +99,25 @@ client.on('messageCreate', async (msg) => {
         //         }
         //     }
         // }
-        if(msg.content == 'createMessage') {
+        if(msg.content == 'cmsg') {
             if(botSettings.notificationChannelId) {
                 try {
-                    // let testMsgChannel = msg.channel.resolve(botSettings.notificationChannelId);
                     let testStreamMsg = await streamingEmbed('mst3k', msg.author.id);
-                    msg.channel.send({embeds: [testStreamMsg]});
+                    let testStreamMsgResult = await msg.channel.send({embeds: [testStreamMsg]});
                     sentTestMessages[0] = {
-                        activityId = 0,
-                        msgId: testStreamMsg
+                        activityId: 0,
+                        msgId: testStreamMsgResult
                     }
                }
-               catch(erorr){ 
+               catch(error){ 
                    console.log(`Error: ${error}`);
                }
             }
         }
         if(cmd[0] == 'umsg') {
             try {
-                // const findMsg = await msg.channel.messages.fetch(cmd[1]);
-                // console.log(cmd[1]);
-                // console.log(findMsg);
-                sentTestMessages[0].msgId.edit(`test`);
+                let doneMsg = await doneStreamingEmbed('varixx','test user');
+                sentTestMessages[0].msgId.edit({embeds: [doneMsg]});
             }
             catch(error) {
                 console.log(error);
@@ -131,6 +128,15 @@ client.on('messageCreate', async (msg) => {
                 await getStreamMakers('varixx', botSettings.twitchClientId, botSettings.twitchToken);
             }
             catch(error) {
+                console.log(error);
+            }
+        }
+        if(msg.content == 'vtest') {
+            try { 
+                await getTwitchVideos('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+            }
+            catch(error)
+            {
                 console.log(error);
             }
         }

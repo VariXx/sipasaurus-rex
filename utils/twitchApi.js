@@ -31,17 +31,20 @@ async function getTwichClips(twitchUsername, clientId, token) {
     return result.data;
 }
 
-async function getStreamMakers(twitchUsername, clientId, token) {
+async function getTwitchVideos(twitchUsername, clientId, token) {
     const twitchUserInfo = await getTwitchUserInfo(twitchUsername, clientId, token);
-    let url = `https://api.twitch.tv/helix/streams/markers?user_id=${twitchUserInfo.id}`;
-    // https://www.twitch.tv/videos/1237325584
-    // let url = `https://api.twitch.tv/helix/streams/markers?video_id=1235504623`;
+    let url = `https://api.twitch.tv/helix/videos?user_id=${twitchUserInfo.id}&sort=time&type=archive&first=1`;
+    const result = await twitchAPI(url, clientId, token);
+    return result.data;
+}
+
+async function getStreamMakers(videoId, clientId, token) {
+    let url = `https://api.twitch.tv/helix/streams/markers?video_id=${videoId}`;
     const result = await twitchAPI(url, clientId, token);
     if(result.error !== undefined && result.error == 'Unauthorized') {
         console.log(`Error getting stream markers: ${result.message}`);
     }
     // console.log(result);
-    console.log(result.data);
     if(result.data.videos !== undefined && result.data.videos.markers !== undefined) {
         console.log(result.data.videos.markers);
     }
@@ -55,3 +58,4 @@ module.exports.getStreamInfo = getStreamInfo;
 module.exports.getTwitchUserInfo = getTwitchUserInfo;
 module.exports.getTwichClips = getTwichClips;
 module.exports.getStreamMakers = getStreamMakers;
+module.exports.getTwitchVideos = getTwitchVideos;
