@@ -30,7 +30,7 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
     }
 }
 
-async function doneStreamingEmbed(msgId, twitchUsername, msgAuthor) {
+async function doneStreamingEmbed(twitchUsername, msgAuthor) {
     try {
         const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         let channelUrl = `https://twitch.tv/${twitchInfo.display_name}`;
