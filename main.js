@@ -14,6 +14,7 @@ var logChannel = null;
 var discordClipsChannel = null;
 var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
+var sentTestMessages = {}; 
 
 async function checkTwitchClips() {
     try {
@@ -67,6 +68,7 @@ client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
     // test command
     if(msg.author.id == botSettings.botOwnerID) {
+        const cmd = msg.content.split(' ');
         if(msg.content == 'twitchToken') {
             const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
             msg.channel.send(tokenUrl);
@@ -103,15 +105,22 @@ client.on('messageCreate', async (msg) => {
                     // let testMsgChannel = msg.channel.resolve(botSettings.notificationChannelId);
                     let testStreamMsg = await streamingEmbed('mst3k', msg.author.id);
                     msg.channel.send({embeds: [testStreamMsg]});
+                    sentTestMessages[0] = {
+                        activityId = 0,
+                        msgId: testStreamMsg
+                    }
                }
                catch(erorr){ 
                    console.log(`Error: ${error}`);
                }
             }
         }
-        if(msg.content == 'umsg') {
+        if(cmd[0] == 'umsg') {
             try {
-
+                // const findMsg = await msg.channel.messages.fetch(cmd[1]);
+                // console.log(cmd[1]);
+                // console.log(findMsg);
+                sentTestMessages[0].msgId.edit(`test`);
             }
             catch(error) {
                 console.log(error);
