@@ -32,7 +32,7 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
     }
 }
 
-async function doneStreamingEmbed(twitchUsername, msgAuthor) {
+async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
     try {
         // const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername);
@@ -51,7 +51,7 @@ async function doneStreamingEmbed(twitchUsername, msgAuthor) {
         .setTitle(twitchVideos[0].title, twitchInfo.profile_image_url, vodUrl)
         .setURL(vodUrl) // change this to get from chnanel info
         .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
-        // .setDescription(`Put stream markers here`)
+        .setDescription(twitchVideos[0].description)
         .setThumbnail(twitchInfo.profile_image_url)
         // .setImage(twitchInfo.offline_image_url)
         .setImage(vodThumbnail)
@@ -67,4 +67,4 @@ async function doneStreamingEmbed(twitchUsername, msgAuthor) {
 }
 
 module.exports.streamingEmbed = streamingEmbed;
-module.exports.doneStreamingEmbed = doneStreamingEmbed;
+module.exports.offlineStreamingEmbed = offlineStreamingEmbed;

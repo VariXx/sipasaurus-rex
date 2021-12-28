@@ -1,6 +1,6 @@
 const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
-const { streamingEmbed, doneStreamingEmbed } = require('./utils/streamingEmbed');
+const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
@@ -91,7 +91,7 @@ client.on('messageCreate', async (msg) => {
         }
         if(cmd[0] == 'umsg') {
             try {
-                let doneMsg = await doneStreamingEmbed('varixx','test user');
+                let doneMsg = await offlineStreamingEmbed('varixx','test user');
                 sentTestMessages[0].msgId.edit({embeds: [doneMsg]});
             }
             catch(error) {
@@ -113,6 +113,19 @@ client.on('messageCreate', async (msg) => {
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {   
+    
+    if(oldStatus !== undefined && oldStatus !== null) {
+        console.log(oldStatus.activities);
+        oldStatus.activities.forEach(async(oldAct) => {
+            if(oldAct.type == "LISTENING") {
+                newStatus.activities.forEach(async(newAct) => {
+                    // Check if it's the same ID. Are IDs generic ('spotify:1') or unique for streaming? If it's generic you'll edit the wrong messages with multiple users. 
+                });
+                console.log(`Old act is listening`);
+                console.log(oldAct);
+            }
+        });
+    }
     newStatus.activities.forEach(async(act) => {
         // if(act.type == "LISTENING") {
             // let listenString = `listening to ${act.state} - ${act.details}`;
