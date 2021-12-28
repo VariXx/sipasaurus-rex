@@ -4,8 +4,10 @@ const botSettings = require('../botSettings.json');
 
 async function streamingEmbed(twitchUsername, msgAuthor) {
     try {
-        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
-        const streamInfo = await twitchApi.getStreamInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        // const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername);
+        // const streamInfo = await twitchApi.getStreamInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        const streamInfo = await twitchApi.getStreamInfo(twitchUsername);
         let urlTimestamp = Date.now();
         const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg?${urlTimestamp}`);
         let streamTitle = Util.escapeMarkdown(streamInfo.title);
@@ -32,12 +34,14 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
 
 async function doneStreamingEmbed(twitchUsername, msgAuthor) {
     try {
-        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        // const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        const twitchInfo = await twitchApi.getTwitchUserInfo(twitchUsername);
         let channelUrl = `https://twitch.tv/${twitchInfo.display_name}`;
-        const twitchVideos = await twitchApi.getTwitchVideos(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        // const twitchVideos = await twitchApi.getTwitchVideos(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
+        const twitchVideos = await twitchApi.getTwitchVideos(twitchUsername);
         const vodUrl = twitchVideos[0].url;
         // console.log(twitchVideos);
-        // const streamMarkers = await twitchApi.getStreamMakers(twitchVideos[0].id, botSettings.twitchClientId, botSettings.twitchToken);
+        // const streamMarkers = await twitchApi.getStreamMarkers(twitchVideos[0].id, botSettings.twitchClientId, botSettings.twitchToken);
         // console.log(streamMarkers);
 
         const returnEmbed = new MessageEmbed() 

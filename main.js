@@ -5,7 +5,7 @@ const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 
-const { getTwichClips, getStreamMakers, getTwitchVideos } = require('./utils/twitchApi');
+const { getTwichClips, getStreamMarkers, getTwitchVideos } = require('./utils/twitchApi');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
@@ -18,7 +18,8 @@ var sentTestMessages = {};
 
 async function checkTwitchClips() {
     try {
-        let clipsResult = await getTwichClips(botSettings.twitchClipsChannel, botSettings.twitchClientId, botSettings.twitchToken);
+        // let clipsResult = await getTwichClips(botSettings.twitchClipsChannel, botSettings.twitchClientId, botSettings.twitchToken);
+        let clipsResult = await getTwichClips(botSettings.twitchClipsChannel);
         const clipList = await getClipList();
         clipsResult.forEach(async (clip) => {
             // console.log(clip.id);
@@ -125,7 +126,9 @@ client.on('messageCreate', async (msg) => {
         }
         if(msg.content == 'mtest') {
             try {
-                await getStreamMakers('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+                const vodId = await getTwitchVideos('varixx');
+                console.log(vodId);
+                const vodMarkers = await getStreamMarkers(vodId[0].id);
             }
             catch(error) {
                 console.log(error);
@@ -133,7 +136,7 @@ client.on('messageCreate', async (msg) => {
         }
         if(msg.content == 'vtest') {
             try { 
-                await getTwitchVideos('varixx', botSettings.twitchClientId, botSettings.twitchToken);
+                await getTwitchVideos('varixx');
             }
             catch(error)
             {
