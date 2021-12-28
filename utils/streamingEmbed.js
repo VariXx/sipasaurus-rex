@@ -40,19 +40,21 @@ async function doneStreamingEmbed(twitchUsername, msgAuthor) {
         // const twitchVideos = await twitchApi.getTwitchVideos(twitchUsername, botSettings.twitchClientId, botSettings.twitchToken);
         const twitchVideos = await twitchApi.getTwitchVideos(twitchUsername);
         const vodUrl = twitchVideos[0].url;
-        // console.log(twitchVideos);
+        const vodThumbnail = twitchVideos[0].thumbnail_url.replace('%{width}x%{height}', '1920x1080');
         // const streamMarkers = await twitchApi.getStreamMarkers(twitchVideos[0].id, botSettings.twitchClientId, botSettings.twitchToken);
         // console.log(streamMarkers);
 
         const returnEmbed = new MessageEmbed() 
         .setColor('#1EA8D7') // change this to use event color from channel info
         // .setTitle(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
-        .setTitle(`Click here to view VOD`, twitchInfo.profile_image_url, vodUrl)
+        // .setTitle(`Click here to view VOD`, twitchInfo.profile_image_url, vodUrl)
+        .setTitle(twitchVideos[0].title, twitchInfo.profile_image_url, vodUrl)
         .setURL(vodUrl) // change this to get from chnanel info
         .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
         // .setDescription(`Put stream markers here`)
         .setThumbnail(twitchInfo.profile_image_url)
-        .setImage(twitchInfo.offline_image_url)
+        // .setImage(twitchInfo.offline_image_url)
+        .setImage(vodThumbnail)
         .setTimestamp()
         .setFooter(`Last updated`);
     
