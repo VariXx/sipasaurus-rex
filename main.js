@@ -74,32 +74,6 @@ client.on('messageCreate', async (msg) => {
             const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
             msg.channel.send(tokenUrl);
         }
-        // if(msg.content == 'st') { // clips test, move this to a function when done testing
-        //     if(botSettings.postTwitchClips) { 
-        //         try {
-        //             let clipsResult = await getTwichClips('varixx', botSettings.twitchClientId, botSettings.twitchToken);
-        //             const clipList = await getClipList();
-        //             clipsResult.forEach(async (clip) => {
-        //                 console.log(clip.id);
-        //                 let foundClip = false;
-        //                 if(clipList !== undefined) {
-        //                     if(clipList.includes(clip.id)) {
-        //                         console.log(`Found clip ${clip.id} in list, skipping.`);
-        //                         log('info', logChannel, `Found clip ${clip.id} in list, skipping.`);
-        //                         foundClip = true;
-        //                     }
-        //                 }
-        //                 if(!foundClip) {
-        //                     await addClip(clip.id);
-        //                     logChannel.send(`${clip.url}`);
-        //                 }
-        //             });
-        //         }
-        //         catch(error) {
-        //             console.log(error);
-        //         }
-        //     }
-        // }
         if(msg.content == 'cmsg') {
             if(botSettings.notificationChannelId) {
                 try {
@@ -127,19 +101,11 @@ client.on('messageCreate', async (msg) => {
         if(msg.content == 'mtest') {
             try {
                 const vodId = await getTwitchVideos('varixx');
-                console.log(vodId);
+                // console.log(vodId);
                 const vodMarkers = await getStreamMarkers(vodId[0].id);
+                // console.log(vodMarkers);
             }
             catch(error) {
-                console.log(error);
-            }
-        }
-        if(msg.content == 'vtest') {
-            try { 
-                await getTwitchVideos('varixx');
-            }
-            catch(error)
-            {
                 console.log(error);
             }
         }
