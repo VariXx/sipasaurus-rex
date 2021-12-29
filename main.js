@@ -109,23 +109,69 @@ client.on('messageCreate', async (msg) => {
                 console.log(error);
             }
         }
+        if(msg.content == 'showlist') {
+            console.log(sentStreamMessages);
+        }
     }
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {   
-    
-    if(oldStatus !== undefined && oldStatus !== null) {
-        console.log(oldStatus.activities);
-        oldStatus.activities.forEach(async(oldAct) => {
-            if(oldAct.type == "LISTENING") {
-                newStatus.activities.forEach(async(newAct) => {
-                    // Check if it's the same ID. Are IDs generic ('spotify:1') or unique for streaming? If it's generic you'll edit the wrong messages with multiple users. 
-                });
-                console.log(`Old act is listening`);
-                console.log(oldAct);
-            }
-        });
+    for(let x in sentStreamMessages) {
+        sentStreamMessages[x].active = false; // mark all stream messages inactive 
     }
+    if(oldStatus !== undefined && oldStatus !== null) {
+        // console.log(`old`);
+        // console.log(oldStatus.activities);
+        let foundInNew = false;        
+        oldStatus.activities.forEach(async(oldAct) => {
+            if(oldAct.type == "STREAMING") {
+                if(!foundInNew) {
+                    if(newStatus !== undefined && newStatus !== null) {
+                        newStatus.activities.forEach(async(newAct) => {
+                            console.log(`----------`);
+                            console.log(`Checking if old activity is in new activity list`);
+                            console.log(`old`);
+                            console.log(oldAct.id);                           
+                            console.log(`new`);
+                            console.log(newAct);
+                            console.log(`old id ${oldAct.id}`);
+                            console.log(`new id ${newAct.id}`);
+                            console.log(`----------`);
+                            if(newAct.id == oldAct.id) {
+                                console.log(`Old activity (${oldAct.id}) and new activity (${newAct.id}) IDs match. Marking as active in json.`);
+                                foundInNew = true;
+                                if(sentStreamMessages[oldAct.id] !== undefined && sentStreamMessages[newAct.id] !== undefined) {
+                                    sentStreamMessages[oldAct.id].active = true; // mark stream message active
+                                }
+                                else {
+                                    console.log(`Couldn't find ${oldAct.id} in json. Activity may have started before bot was running.`);
+                                }
+                            }
+                        });
+                    }
+                }
+                else {
+                    console.log(`Old activity was found in new activity list. Activity is still active, ignoring.`); // this won't work for spotify or custom status
+                }
+            }
+            // else {
+            //     console.log(`Ignoring ${oldAct.type} activity`);
+            // }
+        });
+        for(let x in sentStreamMessages) {
+            // cleanup inactive steam markers
+            if(!sentStreamMessages[x].active) {
+                await offlineStreamingEmbed(sentStreamMessages[x].twitchUsername, sentStreamMessages[x].discordUsername);
+                console.log(`Updated streaming embed message.`);
+                delete sentStreamMessages[x];
+                console.log(`Removed from json`); 
+            }
+        }
+    }
+    // if(newStatus !== undefined && newStatus !== null) {
+    //     console.log(`new`);
+    //     console.log(newStatus.activities);
+    // }
     newStatus.activities.forEach(async(act) => {
         // if(act.type == "LISTENING") {
             // let listenString = `listening to ${act.state} - ${act.details}`;
@@ -188,14 +234,20 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 });                                    
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
-                                    msgId: streamingMsgId
+                                    msgId: streamingMsgId,
+                                    active: true,
+                                    twitchUsername: twitchUsername,
+                                    discordUsername: newStatus.user.username
                                 };                                
                             }
                             else {
                                 const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
-                                    msgId: streamingMsgId
+                                    msgId: streamingMsgId,
+                                    active: true,
+                                    twitchUsername: twitchUsername,
+                                    discordUsername: newStatus.user.username
                                 };
                             }                                                      
                             console.log(`Added activity message to json`);
