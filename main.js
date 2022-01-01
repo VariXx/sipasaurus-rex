@@ -4,17 +4,48 @@ const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbe
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
-
-const { getTwichClips, getStreamMarkers, getTwitchVideos } = require('./utils/twitchApi');
+const { getTwichClips, getStreamInfo } = require('./utils/twitchApi');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 
 var sentStreamMessages = { };
+var cleanupStreamEmbedsTimer;
 var logChannel = null;
 var discordClipsChannel = null;
 var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
 var sentTestMessages = {}; 
+
+async function cleanupStreamEmbeds() {
+    console.log(sentStreamMessages);
+    for(let x in sentStreamMessages) {
+        try {
+            if(sentStreamMessages[x].twitchUsername !== undefined) {
+                const isChannelLive = await getStreamInfo(sentStreamMessages[x].twitchUsername);
+                if(isChannelLive === undefined) { // twitch API doesn't send a message if stream is offline. this is messy. 
+                    /*
+                    sentStreamMessages[act.id] = {
+                        activityId: act.id,
+                        msgId: streamingMsgId,
+                        twitchUsername: twitchUsername,
+                        discordUsername: newStatus.user.username
+                    */
+                    log('info', logChannel, `Stream ${sentStreamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
+                    const offlineEmbed = await offlineStreamingEmbed(sentStreamMessages[x].twitchUsername, sentStreamMessages[x].discordUsername);
+                    sentStreamMessages[x].msgId.edit({embeds: [offlineStreamingEmbed]});
+                    log('info', logChannel, `Message changed to embed. Removing from list.`);
+                    delete sentStreamMessages[x];
+                }
+                else {
+                    log('info', logChannel, `Channel ${sentStreamMessages[x].twitchUsername} is still live. Moving to next object in list.`);
+                }
+            }
+        }
+        catch(error) {
+            console.log(error);
+        }
+    }   
+}
 
 async function checkTwitchClips() {
     try {
@@ -44,7 +75,8 @@ async function checkTwitchClips() {
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
-    client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
+    // client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
+    client.user.setActivity({name: `I am error | ${version}`, type: 'PLAYING'});
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
@@ -61,6 +93,7 @@ client.once('ready', () => {
         else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,60000); // 15 minutes (15*60000)
 });
 
 client.login(botSettings.discordToken);
@@ -69,46 +102,35 @@ client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
     // test command
     if(msg.author.id == botSettings.botOwnerID) {
-        const cmd = msg.content.split(' ');
+        // const cmd = msg.content.split(' ');
         if(msg.content == 'twitchToken') {
             const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
-            msg.channel.send(tokenUrl);
+            msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);
         }
-        if(msg.content == 'cmsg') {
-            if(botSettings.notificationChannelId) {
-                try {
-                    let testStreamMsg = await streamingEmbed('mst3k', msg.author.id);
-                    let testStreamMsgResult = await msg.channel.send({embeds: [testStreamMsg]});
-                    sentTestMessages[0] = {
-                        activityId: 0,
-                        msgId: testStreamMsgResult
-                    }
-               }
-               catch(error){ 
-                   console.log(`Error: ${error}`);
-               }
-            }
-        }
-        if(cmd[0] == 'umsg') {
-            try {
-                let doneMsg = await offlineStreamingEmbed('varixx','test user');
-                sentTestMessages[0].msgId.edit({embeds: [doneMsg]});
-            }
-            catch(error) {
-                console.log(error);
-            }
-        }
-        if(msg.content == 'mtest') {
-            try {
-                const vodId = await getTwitchVideos('varixx');
-                // console.log(vodId);
-                const vodMarkers = await getStreamMarkers(vodId[0].id);
-                // console.log(vodMarkers);
-            }
-            catch(error) {
-                console.log(error);
-            }
-        }
+        // if(msg.content == 'cmsg') {
+        //     if(botSettings.notificationChannelId) {
+        //         try {
+        //             let testStreamMsg = await streamingEmbed('mst3k', msg.author.id);
+        //             let testStreamMsgResult = await msg.channel.send({embeds: [testStreamMsg]});
+        //             sentTestMessages[0] = {
+        //                 activityId: 0,
+        //                 msgId: testStreamMsgResult
+        //             }
+        //        }
+        //        catch(error){ 
+        //            console.log(`Error: ${error}`);
+        //        }
+        //     }
+        // }
+        // if(cmd[0] == 'umsg') {
+        //     try {
+        //         let doneMsg = await offlineStreamingEmbed('varixx','test user');
+        //         sentTestMessages[0].msgId.edit({embeds: [doneMsg]});
+        //     }
+        //     catch(error) {
+        //         console.log(error);
+        //     }
+        // }
         if(msg.content == 'showlist') {
             console.log(sentStreamMessages);
         }
@@ -116,58 +138,6 @@ client.on('messageCreate', async (msg) => {
 });
 
 client.on('presenceUpdate', async (oldStatus, newStatus) => {   
-    for(let x in sentStreamMessages) {
-        sentStreamMessages[x].active = false; // mark all stream messages inactive 
-    }
-    if(oldStatus !== undefined && oldStatus !== null) {
-        // console.log(`old`);
-        // console.log(oldStatus.activities);
-        let foundInNew = false;        
-        oldStatus.activities.forEach(async(oldAct) => {
-            if(oldAct.type == "STREAMING") {
-                if(!foundInNew) {
-                    if(newStatus !== undefined && newStatus !== null) {
-                        newStatus.activities.forEach(async(newAct) => {
-                            console.log(`----------`);
-                            console.log(`Checking if old activity is in new activity list`);
-                            console.log(`old`);
-                            console.log(oldAct.id);                           
-                            console.log(`new`);
-                            console.log(newAct);
-                            console.log(`old id ${oldAct.id}`);
-                            console.log(`new id ${newAct.id}`);
-                            console.log(`----------`);
-                            if(newAct.id == oldAct.id) {
-                                console.log(`Old activity (${oldAct.id}) and new activity (${newAct.id}) IDs match. Marking as active in json.`);
-                                foundInNew = true;
-                                if(sentStreamMessages[oldAct.id] !== undefined && sentStreamMessages[newAct.id] !== undefined) {
-                                    sentStreamMessages[oldAct.id].active = true; // mark stream message active
-                                }
-                                else {
-                                    console.log(`Couldn't find ${oldAct.id} in json. Activity may have started before bot was running.`);
-                                }
-                            }
-                        });
-                    }
-                }
-                else {
-                    console.log(`Old activity was found in new activity list. Activity is still active, ignoring.`); // this won't work for spotify or custom status
-                }
-            }
-            // else {
-            //     console.log(`Ignoring ${oldAct.type} activity`);
-            // }
-        });
-        for(let x in sentStreamMessages) {
-            // cleanup inactive steam markers
-            if(!sentStreamMessages[x].active) {
-                await offlineStreamingEmbed(sentStreamMessages[x].twitchUsername, sentStreamMessages[x].discordUsername);
-                console.log(`Updated streaming embed message.`);
-                delete sentStreamMessages[x];
-                console.log(`Removed from json`); 
-            }
-        }
-    }
     // if(newStatus !== undefined && newStatus !== null) {
     //     console.log(`new`);
     //     console.log(newStatus.activities);
@@ -235,7 +205,6 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
                                     msgId: streamingMsgId,
-                                    active: true,
                                     twitchUsername: twitchUsername,
                                     discordUsername: newStatus.user.username
                                 };                                
@@ -245,7 +214,6 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 sentStreamMessages[act.id] = {
                                     activityId: act.id,
                                     msgId: streamingMsgId,
-                                    active: true,
                                     twitchUsername: twitchUsername,
                                     discordUsername: newStatus.user.username
                                 };
