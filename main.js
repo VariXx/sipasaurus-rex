@@ -93,7 +93,7 @@ client.once('ready', () => {
         else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
-    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,60000); // 15 minutes (15*60000)
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
 
 client.login(botSettings.discordToken);
