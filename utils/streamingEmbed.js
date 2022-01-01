@@ -51,7 +51,7 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         .setTitle(twitchVideos[0].title, twitchInfo.profile_image_url, vodUrl)
         .setURL(vodUrl) // change this to get from chnanel info
         .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
-        .setDescription(twitchVideos[0].description)
+        .setDescription(`${msgAuthor} is offline`)
         .setThumbnail(twitchInfo.profile_image_url)
         // .setImage(twitchInfo.offline_image_url)
         .setImage(vodThumbnail)
