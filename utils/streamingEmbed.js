@@ -53,7 +53,6 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
         .setDescription(`${msgAuthor} is offline`)
         .setThumbnail(twitchInfo.profile_image_url)
-        // .setImage(twitchInfo.offline_image_url)
         .setImage(vodThumbnail)
         .setTimestamp()
         .setFooter(`Last updated`);
