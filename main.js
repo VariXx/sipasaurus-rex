@@ -31,8 +31,8 @@ async function cleanupStreamEmbeds() {
                         discordUsername: newStatus.user.username
                     */
                     log('info', logChannel, `Stream ${sentStreamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
-                    const offlineStreamingEmbed = await offlineStreamingEmbed(sentStreamMessages[x].twitchUsername, sentStreamMessages[x].discordUsername);
-                    sentStreamMessages[x].msgId.edit({embeds: [offlineStreamingEmbed]});
+                    const offlineStreamingEmbedMsg = await offlineStreamingEmbed(sentStreamMessages[x].twitchUsername, sentStreamMessages[x].discordUsername);
+                    sentStreamMessages[x].msgId.edit({embeds: [offlineStreamingEmbedMsg]});
                     log('info', logChannel, `Message changed to embed. Removing from list.`);
                     delete sentStreamMessages[x];
                 }
