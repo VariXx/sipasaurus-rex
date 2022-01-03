@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.5.0] - 2021-12-
+## [0.5.0] - 2022-01-03
 ### Added 
 - Added editing messages when stream goes offline
 - Added stream markers for offline message. **You will need to create a new token with new scopes for this feature**. 
