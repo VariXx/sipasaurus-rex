@@ -4,7 +4,9 @@
 
 <!-- <img src="https://acceptdefaults.com/varibot-twitch-js/varibot.png" align="right" /> -->
 
-Sipasaurus Rex is a discord bot that sends messages when a user is live on twitch based on the user's discord status. 
+Sipasaurus Rex is a discord bot that sends a notification when a user is live on twitch or when a clip is created from the user's channel.
+
+This is designed to be a single instance for one server/guild. The setup process is not very user friendly. This might be improved in future versions.
 
 ## Installation
 - Download and extract the [latest release](https://github.com/aosterwyk/sipasaurus-rex/releases/latest)
