@@ -147,9 +147,9 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     else {
                                         sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
                                     }                                
-                                    let updateLogMsg = `Updated activity (${act.id}) message`;
-                                    console.log(updateLogMsg);
-                                    log('info', logChannel, updateLogMsg);
+                                    let updatedMsgLog = `Updated activity (${act.id}) message`;
+                                    console.log(updatedMsgLog);
+                                    log('info', logChannel, updatedMsgLog);
                                     foundMessage = true;
                                 }
                             }
@@ -180,9 +180,9 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                         discordUsername: newStatus.user.username
                                     };
                                 }                                                      
-                                let updateLogMsg = `Added activity (${act.id}) message to list`;
-                                console.log(updateLogMsg);
-                                log('info', logChannel, updateLogMsg);
+                                let addedMsgLog = `Added activity (${act.id}) message to list`;
+                                console.log(addedMsgLog);
+                                log('info', logChannel, addedMsgLog);
                             }
                         }
                     }                
