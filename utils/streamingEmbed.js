@@ -53,7 +53,7 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         return returnEmbed;
     }
     catch(error) {
-        console.log(`Error updating embed: ${error}`);
+        console.log(error);
         return undefined;
     }
 }
