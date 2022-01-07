@@ -45,7 +45,7 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         // console.log(streamMarkers);
 
         const returnEmbed = new MessageEmbed() 
-        .setColor('#1EA8D7') // change this to use event color from channel info
+        .setColor('#3d3d3f') // change this to use event color from channel info
         // .setTitle(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
         // .setTitle(`Click here to view VOD`, twitchInfo.profile_image_url, vodUrl)
         .setTitle(twitchVideos[0].title, twitchInfo.profile_image_url, vodUrl)
