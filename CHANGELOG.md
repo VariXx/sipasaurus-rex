@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.5.0] - 2022-01-03
+## [0.5.0] - 2022-01-11
 ### Added 
-- Added editing messages when stream goes offline
-- Added stream markers for offline message. **You will need to create a new token with new scopes for this feature**. 
-- Added command for creating twitch token 
+- Added offline embed messages when streams go offline
+- Added stream markers to twitch api functions. This is not in use yet. 
+- Added command for creating twitch token
+
+### Changed
+- Changed Twitch API functions. Only the main Twitch API function needs token and client ID. 
 
 ## [0.4.1] - 2021-12-17
 ### Fixed
