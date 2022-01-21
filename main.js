@@ -104,8 +104,11 @@ async function processCommand(msg) {
         return;
     }
     if(command == 'hey') {
-        msg.channel.send(`Hi :t_rex:`);
-        return;
+        if(msg.author.id == botSettings.botOwnerID) {
+            if(client.user.username == "Buzzyflop") { msg.channel.send(`:rabbit:`); }
+            else { msg.channel.send(`Hi :t_rex:`); }
+            return;
+        }
     }
     if(command == 'twitchtoken') {
         const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
