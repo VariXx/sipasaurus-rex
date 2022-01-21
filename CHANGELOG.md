@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
+## [0.6.0] - 2022-01-
+### Added 
+- Added commands to change settings
+- Added per guild settings
+
+### Changed
+- Changed commands from prefix to bot mentions
+
 ## [0.5.0] - 2022-01-11
 ### Added 
 - Added offline embed messages when streams go offline
