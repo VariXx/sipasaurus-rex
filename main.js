@@ -344,7 +344,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     if(sentStreamMessages[key].activityId == act.id) {
                                         let embedMsgContent = ``;
                                         let roleMention = ``;
-                                        if(guildSettings.roleToPing !== undefined || guildSettings.roleToPing !== 'none') {
+                                        if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
                                             roleMention = await newStatus.guild.roles.fetch(guildSettings.roleToPing);
                                             embedMsgContent = `${roleMention}`;
                                             sentStreamMessages[key].msgId.edit({
