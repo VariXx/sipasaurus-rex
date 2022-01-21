@@ -97,6 +97,10 @@ client.on('messageCreate', async (msg) => {
             const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
             msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);
         }
+        if(msg.conten = 'buzzyLink') {
+            const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=697816077547339797&scope=bot&permissions=2147994688`; 
+            msg.channel.send(`Buzzyflop invite: ${inviteUrl}`);
+        }
         // if(msg.content == 'showlist') {
         //     console.log(sentStreamMessages);
         // }
