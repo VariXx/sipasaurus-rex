@@ -103,7 +103,7 @@ async function processCommand(msg) {
         return;
     }
     if(command == 'hey') {
-        msg.channel.send(`Hi`);
+        msg.channel.send(`Hi :t_rex:`);
         return;
     }
     if(command == 'twitchtoken') {
@@ -168,7 +168,41 @@ async function processCommand(msg) {
                         }
                     }
                 }
-                // watchedUserId
+                if(checkMsg[2].toLowerCase() == 'user') {
+                    if(checkMsg[3] !== undefined) {
+                        if(checkMsg[3] == 'all') {
+                            await setGuildSetting(msg.guild.id, 'watchedUserId', 'all');
+                            msg.channel.send(`Set stream notifications to all users.`);
+                            return;                            
+                        }
+                        if(checkMsg[3] == 'off') {
+                            await setGuildSetting(msg.guild.id, 'watchedUserId', '');
+                            msg.channel.send(`Disabled stream notifications. Now I'm bored.`);
+                            return;                            
+                        }
+                        if(msg.mentions.users.size < 2) {
+                            msg.channel.send(`Error: No user mentioned. (Format: set live user @<user>)`);
+                            return; 
+                        }   
+                        if(msg.mentions.users.size > 2) {
+                            msg.channel.send(`Error: More than one user mentioned. (Format: set live user @<user>)`);                            
+                            return;
+                        }
+                        if(msg.mentions.users.size == 2) { // good, bot + user
+                            // console.log(msg.mentions.users);
+                            msg.mentions.users.forEach(async (user) => {
+                                if(user.id == client.user.id) {
+                                    console.log(`Found client (bot) user id, skipping.`);
+                                }
+                                else {
+                                    console.log(user.id);
+                                    await setGuildSetting(msg.guild.id, 'watchedUserId', user.id);
+                                    msg.channel.send(`Set stream notifications user to ${user.username}`);
+                                }
+                            });
+                        }
+                    }
+                }
             }
             if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'clips') {
                 if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'channel') {
