@@ -1,6 +1,8 @@
 const { Client, Intents } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
+const { getGuildSetting } = require('./utils/getGuildSettings');
+const { setGuildSetting } = require('./utils/setGuildSetting');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
@@ -87,23 +89,152 @@ client.once('ready', () => {
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
 
+async function processCommand(msg) {
+    let checkMsg = msg.content.split(' ');
+    let command = ``;
+    if(checkMsg[0].includes(client.user.id)) {
+        checkMsg.shift();
+    }
+    if(checkMsg[0] !== undefined) {
+        command = checkMsg[0].toLowerCase();
+    }
+    else {
+        log('info', logChannel, `Empty command (${msg}), ignoring.`);
+        return;
+    }
+    if(command == 'hey') {
+        msg.channel.send(`Hi`);
+        return;
+    }
+    if(command == 'twitchtoken') {
+        const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
+        msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
+        return;
+    }
+    if(command == 'buzzylink') {
+        const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=697816077547339797&scope=bot&permissions=2147994688`; 
+        msg.channel.send(`Buzzyflop invite: ${inviteUrl}`);   
+        return; 
+    }
+    if(command == 'set') {
+        if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
+            if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'live') {
+                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'channel') {
+                    if(checkMsg[3] !== undefined) {
+                        let findChan = checkMsg[3].slice(2,-1);
+                        try {
+                            let foundChan = await client.channels.fetch(findChan);
+                            let foundChanId = await client.channels.resolveId(foundChan);                  
+                            await setGuildSetting(msg.guild.id, 'notificationChannelId', foundChanId);
+                            console.log(`Set live announcement channel for guild ${msg.guild.id} to ${foundChanId}`);
+                            msg.channel.send(`Set live announcement channel to ${foundChan}`);
+                        }
+                        catch(error) {
+                            msg.channel.send(`Error adding channel`);
+                            log('error', logChannel, `Error adding channel. ${error}`);
+                            console.log(error);
+                        }
+                    }
+                    else {
+                        msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
+                    }
+                }
+                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'role') {
+                    if(checkMsg[3] !== undefined) {
+                        if(checkMsg[3] == 'off') {
+                            await setGuildSetting(msg.guild.id, 'roleToPing', 'off');
+                            msg.channel.send(`Disabled role mentions`);
+                            return;
+                        }
+                        if(msg.mentions.roles.size > 0) {
+                            let foundRoleId = checkMsg[3].slice(3,-1);
+                            try {
+                                await setGuildSetting(msg.guild.id, 'roleToPing', foundRoleId);
+                                let foundRoleMention = await msg.guild.roles.fetch(foundRoleId);
+                                msg.channel.send({
+                                    content: `Set live notification role to ${foundRoleMention}`,
+                                    allowedMentions: {roles: [foundRoleMention.id]}
+                                });                                
+                            }
+                            catch(error) {
+                                msg.channel.send(`Error setting role.`);
+                                log('error', logChannel, `Error setting role for guild ${msg.guild.id}`);
+                                console.log(error);
+                            }
+                        }
+                        else {
+                            console.log(`no role mentions`);
+                            msg.channel.send(`Couldn't find role. (Format: set live role @<role>)`);
+                        }
+                    }
+                }
+                // watchedUserId
+            }
+            if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'clips') {
+                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'channel') {
+                    if(checkMsg[3] !== undefined) {
+                        let findChan = checkMsg[3].slice(2,-1);
+                        try {
+                            let foundChan = await client.channels.fetch(findChan);
+                            let foundChanId = await client.channels.resolveId(foundChan);                 
+                            await setGuildSetting(msg.guild.id, 'checkTwitchClips', true);
+                            await setGuildSetting(msg.guild.id, 'discordClipsChannel', foundChanId);
+                            console.log(`Set clips channel for guild ${msg.guild.id} to ${foundChanId}`);
+                            msg.channel.send(`Set clips channel to ${foundChan}`);
+                        }
+                        catch(error) {
+                            msg.channel.send(`Error adding channel`);
+                            log('error', logChannel, `Error adding channel. ${error}`);
+                            console.log(error);
+                        }
+                    }
+                    else {
+                        msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
+                    }
+                }
+                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'off') {
+                    try {
+                        await setGuildSetting(msg.guild.id, 'checkTwitchClips', false);
+                        await setGuildSetting(msg.guild.id, 'discordClipsChannel', '');
+                        console.log(`Disabled clips channel for guild ${msg.guild.id}`);
+                        msg.channel.send(`Disabled clips notification`);
+                    }
+                    catch {
+                        msg.channel.send(`Error disabling clips channel`);
+                        log('error', logChannel, `Error disabling clips channel ${error}`);
+                        console.log(error);
+                    }
+                }
+                if(checkMsg[2] !== undefined) {
+                    if(checkMsg[2].toLowerCase() == 'for' || checkMsg[2].toLowerCase() == 'user') { // command aliases! 
+                        if(checkMsg[3] !== undefined) {
+                            try {
+                                await setGuildSetting(msg.guild.id, 'twitchClipsChannel', checkMsg[3]);
+                                console.log(`Set clips user for guild ${msg.guild.id} to ${checkMsg[3]}`);
+                                msg.channel.send(`Set clips user to ${checkMsg[3]} <https://twitch.tv/${checkMsg[3]}>`);
+                            }
+                            catch {
+                                msg.channel.send(`Error setting clips user`);
+                                log('error', logChannel, `Error setting clips user ${error}`);
+                                console.log(error);
+                            }
+                        }
+                        else {
+                            msg.channel.send(`Couldn't read twitch user. (Format: set clips user <twitch usename>)`);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 client.login(botSettings.discordToken);
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
-    if(msg.author.id == botSettings.botOwnerID) {
-        // const cmd = msg.content.split(' ');
-        if(msg.content == 'twitchToken') {
-            const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
-            msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);
-        }
-        if(msg.conten = 'buzzyLink') {
-            const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=697816077547339797&scope=bot&permissions=2147994688`; 
-            msg.channel.send(`Buzzyflop invite: ${inviteUrl}`);
-        }
-        // if(msg.content == 'showlist') {
-        //     console.log(sentStreamMessages);
-        // }
+    if(msg.mentions.users.hasAny(client.user.id)) {
+        processCommand(msg);
     }
 });
 

@@ -12,5 +12,6 @@
     "checkTwitchClips": false,
     "twitchClipsChannel": "",
     "discordClipsChannel": "",
-    "clipsCheckTime": 60
+    "clipsCheckTime": 60,
+    "guildSettingsDir":"d:\\frogbot\\guildSettings\\"
 }
