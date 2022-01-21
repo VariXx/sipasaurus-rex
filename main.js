@@ -3,6 +3,7 @@ const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
 const { getGuildSetting, getAllGuildSettings } = require('./utils/getGuildSettings');
 const { setGuildSetting } = require('./utils/setGuildSetting');
+const { helpEmbed } = require('./utils/helpEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
@@ -118,26 +119,28 @@ async function processCommand(msg) {
     }
     if(command == 'help') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
-            let helpMsg = `
-Mention me with one of the commands below.
-**General**
-**help**: Displays this message.
-**invite**: Send URL to add me to your Discord server. Please get the server owner's permission first.
+//             let helpMsg = `
+// Mention me with one of the commands below.
+// **General**
+// **help**: Displays this message.
+// **invite**: Send URL to add me to your Discord server. Please get the server owner's permission first.
 
-**Stream Notifications**
-**set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
-**set live role @<role>**: Role to mention in stream notification messages.
-**set live role off**: Disable role mentions in stream notification messages.
-**set live user @<user>**: The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
-**set live user all**: Send stream notification messages for all users in this server. 
-**set live user off**: Disable stream notification messages.
+// **Stream Notifications**
+// **set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
+// **set live role @<role>**: Role to mention in stream notification messages.
+// **set live role off**: Disable role mentions in stream notification messages.
+// **set live user @<user>**: The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
+// **set live user all**: Send stream notification messages for all users in this server. 
+// **set live user off**: Disable stream notification messages.
 
-**Clips**
-**set clips channel**: Discord channel to send notification messages when a new clip is created on twitch. 
-**set clips user**: Twitch channel name to watch for new clips. 
-**set clips off**: Disable twitch clip notification messages.
-            `;
-            msg.channel.send(helpMsg);
+// **Clips**
+// **set clips channel**: Discord channel to send notification messages when a new clip is created on twitch. 
+// **set clips user**: Twitch channel name to watch for new clips. 
+// **set clips off**: Disable twitch clip notification messages.
+//             `;
+//             msg.channel.send(helpMsg);
+            const helpMsg = await helpEmbed(msg.author.username);
+            msg.channel.send({embeds: [helpMsg]});
         }
     }
     if(command == 'set') {
