@@ -147,7 +147,7 @@ async function processCommand(msg) {
                 if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'role') {
                     if(checkMsg[3] !== undefined) {
                         if(checkMsg[3] == 'off') {
-                            await setGuildSetting(msg.guild.id, 'roleToPing', 'off');
+                            await setGuildSetting(msg.guild.id, 'roleToPing', 'none');
                             msg.channel.send(`Disabled role mentions`);
                             return;
                         }
@@ -322,7 +322,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     if(sentStreamMessages[key].activityId == act.id) {
                                         let embedMsgContent = ``;
                                         let roleMention = ``;
-                                        if(guildSettings.roleToPing !== 'none') {
+                                        if(guildSettings.roleToPing !== undefined || guildSettings.roleToPing !== 'none') {
                                             roleMention = await newStatus.guild.roles.fetch(guildSettings.roleToPing);
                                             embedMsgContent = `${roleMention}`;
                                             sentStreamMessages[key].msgId.edit({
