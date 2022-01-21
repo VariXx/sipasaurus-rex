@@ -111,14 +111,33 @@ async function processCommand(msg) {
         msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
         return;
     }
-    if(command == 'buzzylink') {
-        const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=697816077547339797&scope=bot&permissions=2147994688`; 
-        msg.channel.send(`Buzzyflop invite: ${inviteUrl}`);   
+    if(command == 'invite') {
+        const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=2147994688`; 
+        msg.channel.send(`Add me to your server: ${inviteUrl}`);   
         return; 
     }
     if(command == 'help') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
+            let helpMsg = `
+Mention me with one of the commands below.
+**General**
+**help**: Displays this message.
+**invite**: Send URL to add me to your Discord server. Please get the server owner's permission first.
 
+**Stream Notifications**
+**set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
+**set live role @<role>**: Role to mention in stream notification messages.
+**set live role off**: Disable role mentions in stream notification messages.
+**set live user @<user>**: The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
+**set live user all**: Send stream notification messages for all users in this server. 
+**set live user off**: Disable stream notification messages.
+
+**Clips**
+**set clips channel**: Discord channel to send notification messages when a new clip is created on twitch. 
+**set clips user**: Twitch channel name to watch for new clips. 
+**set clips off**: Disable twitch clip notification messages.
+            `;
+            msg.channel.send(helpMsg);
         }
     }
     if(command == 'set') {
