@@ -116,6 +116,11 @@ async function processCommand(msg) {
         msg.channel.send(`Buzzyflop invite: ${inviteUrl}`);   
         return; 
     }
+    if(command == 'help') {
+        if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
+
+        }
+    }
     if(command == 'set') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
             if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'live') {
@@ -302,6 +307,77 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                         }
                     }
                     // send or update embed
+                    let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
+                    try { 
+                        if(botSettings.twitchToken == undefined || botSettings.twitchToken === null || botSettings.twitchToken.length < 5) {
+                            throw "Twitch token in bot settings invalid";
+                        }
+                        const actChannelManager = newStatus.guild.channels;
+                        const msgChannel = actChannelManager.resolve(guildSettings.notificationChannelId);
+                        const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
+                        if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
+                            if(msgChannel !== null) {
+                                let foundMessage = false;
+                                for(const key in sentStreamMessages) {
+                                    if(sentStreamMessages[key].activityId == act.id) {
+                                        let embedMsgContent = ``;
+                                        let roleMention = ``;
+                                        if(guildSettings.roleToPing !== 'none') {
+                                            roleMention = await newStatus.guild.roles.fetch(guildSettings.roleToPing);
+                                            embedMsgContent = `${roleMention}`;
+                                            sentStreamMessages[key].msgId.edit({
+                                                content: `${roleMention}`,
+                                                embeds: [twitchEmbedMsg],
+                                                allowedMentions: {roles: [roleMention.id]}
+                                            });                                    
+                                        }
+                                        else {
+                                            sentStreamMessages[key].msgId.edit({embeds: [twitchEmbedMsg]});
+                                        }                                
+                                        let updatedMsgLog = `Updated activity (${act.id}) message`;
+                                        console.log(updatedMsgLog);
+                                        log('info', logChannel, updatedMsgLog);
+                                        foundMessage = true;
+                                    }
+                                }
+                                if(!foundMessage){
+                                    let embedMsgContent = ``;
+                                    let roleMention = ``;
+                                    if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
+                                        roleMention = await newStatus.guild.roles.fetch(guildSettings.roleToPing);
+                                        embedMsgContent = `${roleMention}`;
+                                        const streamingMsgId = await msgChannel.send({
+                                            content: `${roleMention}`,
+                                            embeds: [twitchEmbedMsg],
+                                            allowedMentions: {roles: [roleMention.id]}
+                                        });                                    
+                                        sentStreamMessages[act.id] = {
+                                            activityId: act.id,
+                                            msgId: streamingMsgId,
+                                            twitchUsername: twitchUsername,
+                                            discordUsername: newStatus.user.username
+                                        };                                
+                                    }
+                                    else {
+                                        const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
+                                        sentStreamMessages[act.id] = {
+                                            activityId: act.id,
+                                            msgId: streamingMsgId,
+                                            twitchUsername: twitchUsername,
+                                            discordUsername: newStatus.user.username
+                                        };
+                                    }                                                      
+                                    let addedMsgLog = `Added activity (${act.id}) message to list`;
+                                    console.log(addedMsgLog);
+                                    log('info', logChannel, addedMsgLog);
+                                }
+                            }
+                        }                
+                    }
+                    catch(error) {
+                        console.log(`Error creating streaming embed message: ${error}`);
+                        log('error', logChannel, `Error creating streaming embed message: ${error}`);
+                    }                    
                 }
                 catch(error) {
                     console.log(`Error checking guild settings for activity ${act.id}. This could mean the bot hasn't been setup yet.`);
