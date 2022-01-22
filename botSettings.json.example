@@ -1,6 +1,7 @@
 {
     "discordToken": "",
     "cmdPrefix": "!",
+    "activity": "I am error",
     "notificationChannelId": "",
     "roleToPing": "none",
     "twitchClientId": "",
