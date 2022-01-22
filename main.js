@@ -69,8 +69,7 @@ async function checkTwitchClips() {
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
-    client.user.setActivity({name: `your streaming status | ${version}`, type: 'WATCHING'});
-    // client.user.setActivity({name: `I am error | ${version}`, type: 'PLAYING'});
+    client.user.setActivity({name: `${botSettings.activity} | ${version}`, type: 'PLAYING'});
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
@@ -122,26 +121,6 @@ async function processCommand(msg) {
     }
     if(command == 'help') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
-//             let helpMsg = `
-// Mention me with one of the commands below.
-// **General**
-// **help**: Displays this message.
-// **invite**: Send URL to add me to your Discord server. Please get the server owner's permission first.
-
-// **Stream Notifications**
-// **set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
-// **set live role @<role>**: Role to mention in stream notification messages.
-// **set live role off**: Disable role mentions in stream notification messages.
-// **set live user @<user>**: The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
-// **set live user all**: Send stream notification messages for all users in this server. 
-// **set live user off**: Disable stream notification messages.
-
-// **Clips**
-// **set clips channel**: Discord channel to send notification messages when a new clip is created on twitch. 
-// **set clips user**: Twitch channel name to watch for new clips. 
-// **set clips off**: Disable twitch clip notification messages.
-//             `;
-//             msg.channel.send(helpMsg);
             const helpMsg = await helpEmbed(msg.author.username);
             msg.channel.send({embeds: [helpMsg]});
         }
@@ -343,8 +322,11 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                         if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                             if(msgChannel !== null) {
                                 let foundMessage = false;
+                                let searchMessageId = `${newStatus.guild.id}-${act.id}`;
                                 for(const key in sentStreamMessages) {
-                                    if(sentStreamMessages[key].activityId == act.id) {
+                                    // if(sentStreamMessages[key].activityId == act.id) {
+                                    // if(sentStreamMessages[key].sentMessageId == searchMessageId) {
+                                    if(key == searchMessageId) {
                                         let embedMsgContent = ``;
                                         let roleMention = ``;
                                         if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
@@ -375,9 +357,12 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                             content: `${roleMention}`,
                                             embeds: [twitchEmbedMsg],
                                             allowedMentions: {roles: [roleMention.id]}
-                                        });                                    
-                                        sentStreamMessages[act.id] = {
+                                        });
+                                        let sentMessageId = `${newStatus.guild.id}-${act.id}`;
+                                        sentStreamMessages[sentMessageId] = {
                                             activityId: act.id,
+                                            sentMessageId: sentMessageId,
+                                            guildId: newStatus.guild.id,
                                             msgId: streamingMsgId,
                                             twitchUsername: twitchUsername,
                                             discordUsername: newStatus.user.username
@@ -385,8 +370,11 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     }
                                     else {
                                         const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
-                                        sentStreamMessages[act.id] = {
+                                        let sentMessageId = `${newStatus.guild.id}-${act.id}`;
+                                        sentStreamMessages[sentMessageId] = {
                                             activityId: act.id,
+                                            sentMessageId: sentMessageId,
+                                            guildId: newStatus.guild.id,
                                             msgId: streamingMsgId,
                                             twitchUsername: twitchUsername,
                                             discordUsername: newStatus.user.username
