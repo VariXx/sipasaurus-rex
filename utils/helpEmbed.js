@@ -9,23 +9,16 @@ async function helpEmbed(requestedBy){
         .addFields(
             { name: 'help',value: 'Displays this message.'},
             { name: 'invite', value: 'Send URL to add me to your Discord server.'},
-            { name: '\u200B', value: '\u200B' },
-            { name: 'Stream Notifications', value: `**set live channel #<channel>**
-            Sets the channel to send notifications when users go live on twitch.
-            **set live role @<role>/off**
-            Role to mention in stream notification messages.
-            **off** disables role mentions in stream notification messages.
-            **set live user @<user>/all/off**
-            The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
-            **all** will send a notification for all users.
-            **off** disables steam notification messages.`},
-            { name: '\u200B', value: '\u200B' },
-            { name: 'Clips', value: `**set clips channel**
-            Discord channel to send notification messages when a new clip is created on twitch. 
-            **set clips user**
-            Twitch channel name to watch for new clips. 
-            **set clips off**
-            Disable twitch clip notification messages.`}
+            // { name: '\u200B', value: '\u200B' },
+            // { name: 'Stream Notifications', value: '-'},
+            { name: '**set live channel #<channel>**', value: 'Sets the channel to send notifications when users go live on twitch.'},
+            { name: '**set live role @<role>/off**', value: 'Role to mention in stream notification messages.\n**off** disables role mentions in stream notification messages.'},
+            { name: '**set live user @<user>/all/off**', value: 'The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.\n**all** will send a notification for all users.\n**off** disables steam notification messages.'},
+            // { name: '\u200B', value: '\u200B' },
+            // { name: 'Clips', value: '-'},
+            { name: '**set clips channel**', value: 'Discord channel to send notification messages when a new clip is created on twitch.'},
+            { name: '**set clips user**', value: 'Twitch channel name to watch for new clips.'},
+            { name: '**set clips off**', value: 'Disable twitch clip notification messages.'}
         )
         .setFooter(`Requested by ${requestedBy}`);
 
