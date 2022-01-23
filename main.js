@@ -49,7 +49,8 @@ async function checkTwitchClips() {
             const guildSettings = await getAllGuildSettings(g.id);
             if(guildSettings.twitchClipsChannel !== undefined && guildSettings.discordClipsChannel !== undefined) {
                 let clipsResult = await getTwichClips(guildSettings.twitchClipsChannel);
-                const clipList = await getClipList();
+                let clipsListFilename = `clipList-${g.id}`;
+                const clipList = await getClipList(clipsListFilename);
                 clipsResult.forEach(async (clip) => {
                     let foundClip = false;
                     if(clipList !== undefined) {
@@ -60,7 +61,7 @@ async function checkTwitchClips() {
                         }
                     }
                     if(!foundClip) {
-                        await addClip(clip.id);
+                        await addClip(clipsListFilename, clip.id);
                         const discordClipsChannel = client.channels.resolve(guildSettings.discordClipsChannel);                        
                         discordClipsChannel.send(`${clip.url}`);
                     }

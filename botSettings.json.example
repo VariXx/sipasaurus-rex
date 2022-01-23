@@ -11,5 +11,5 @@
     "checkTwitchClips": false,
     "clipsCheckTime": 60,
     "guildSettingsDir":"c:\\sipa\\guildSettings\\",
-    "clipsList":"c:\\sipa\\clipsList.sipa"
+    "clipsListDir":"c:\\sipa\\clipsList\\"
 }
