@@ -69,7 +69,9 @@ async function checkTwitchClips() {
 
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
-    client.user.setActivity({name: `${botSettings.activity} | ${version}`, type: 'PLAYING'});
+    if(botSettings.activity !== undefined) {
+        client.user.setActivity({name: `${botSettings.activity} | ${version}`, type: 'WATCHING'});
+    }
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
@@ -105,21 +107,29 @@ async function processCommand(msg) {
     if(command == 'hey') {
         if(msg.author.id == botSettings.botOwnerID) {
             if(client.user.username == "Buzzyflop") { msg.channel.send(`:rabbit:`); }
-            else { msg.channel.send(`Hi :t_rex:`); }
+            else { msg.channel.send(`:t_rex:`); }
+            return;
+        }
+    }
+    if(command == 'purpose') {
+        if(msg.author.id == botSettings.botOwnerID) {
+            msg.channel.send(`:butter:`);
             return;
         }
     }
     if(command == 'twitchtoken') {
-        const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
-        msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
-        return;
+        if(msg.author.id == botSettings.botOwnerID) {        
+            const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
+            msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
+            return;
+        }
     }
     if(command == 'invite') {
         const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=2147994688`; 
         msg.channel.send(`Add me to your server: ${inviteUrl}`);   
         return; 
     }
-    if(command == 'help') {
+    if(command == 'help' || command == '?') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
             const helpMsg = await helpEmbed(msg.author.username);
             msg.channel.send({embeds: [helpMsg]});
@@ -128,127 +138,128 @@ async function processCommand(msg) {
     if(command == 'set') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
             if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'live') {
-                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'channel') {
-                    if(checkMsg[3] !== undefined) {
-                        let findChan = checkMsg[3].slice(2,-1);
-                        try {
-                            let foundChan = await client.channels.fetch(findChan);
-                            let foundChanId = await client.channels.resolveId(foundChan);                  
-                            await setGuildSetting(msg.guild.id, 'notificationChannelId', foundChanId);
-                            console.log(`Set live announcement channel for guild ${msg.guild.id} to ${foundChanId}`);
-                            msg.channel.send(`Set live announcement channel to ${foundChan}`);
-                        }
-                        catch(error) {
-                            msg.channel.send(`Error adding channel`);
-                            log('error', logChannel, `Error adding channel. ${error}`);
-                            console.log(error);
-                        }
-                    }
-                    else {
-                        msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
-                    }
-                }
-                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'role') {
-                    if(checkMsg[3] !== undefined) {
-                        if(checkMsg[3] == 'off') {
-                            await setGuildSetting(msg.guild.id, 'roleToPing', 'none');
-                            msg.channel.send(`Disabled role mentions`);
-                            return;
-                        }
-                        if(msg.mentions.roles.size > 0) {
-                            let foundRoleId = checkMsg[3].slice(3,-1);
+                if(checkMsg[2] !== undefined) {
+                    if(checkMsg[2].toLowerCase() == 'channel') {
+                        if(checkMsg[3] !== undefined) {
+                            let findChan = checkMsg[3].slice(2,-1);
                             try {
-                                await setGuildSetting(msg.guild.id, 'roleToPing', foundRoleId);
-                                let foundRoleMention = await msg.guild.roles.fetch(foundRoleId);
-                                msg.channel.send({
-                                    content: `Set live notification role to ${foundRoleMention}`,
-                                    allowedMentions: {roles: [foundRoleMention.id]}
-                                });                                
+                                let foundChan = await client.channels.fetch(findChan);
+                                let foundChanId = await client.channels.resolveId(foundChan);                  
+                                await setGuildSetting(msg.guild.id, 'notificationChannelId', foundChanId);
+                                console.log(`Set live announcement channel for guild ${msg.guild.id} to ${foundChanId}`);
+                                msg.channel.send(`Set live announcement channel to ${foundChan}`);
                             }
                             catch(error) {
-                                msg.channel.send(`Error setting role.`);
-                                log('error', logChannel, `Error setting role for guild ${msg.guild.id}`);
+                                msg.channel.send(`Error adding channel`);
+                                log('error', logChannel, `Error adding channel. ${error}`);
                                 console.log(error);
                             }
                         }
                         else {
-                            console.log(`no role mentions`);
-                            msg.channel.send(`Couldn't find role. (Format: set live role @<role>)`);
+                            msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
                         }
                     }
-                }
-                if(checkMsg[2].toLowerCase() == 'user') {
-                    if(checkMsg[3] !== undefined) {
-                        if(checkMsg[3] == 'all') {
-                            await setGuildSetting(msg.guild.id, 'watchedUserId', 'all');
-                            msg.channel.send(`Set stream notifications to all users.`);
-                            return;                            
-                        }
-                        if(checkMsg[3] == 'off') {
-                            await setGuildSetting(msg.guild.id, 'watchedUserId', '');
-                            msg.channel.send(`Disabled stream notifications. Now I'm bored.`);
-                            return;                            
-                        }
-                        if(msg.mentions.users.size < 2) {
-                            msg.channel.send(`Error: No user mentioned. (Format: set live user @<user>)`);
-                            return; 
-                        }   
-                        if(msg.mentions.users.size > 2) {
-                            msg.channel.send(`Error: More than one user mentioned. (Format: set live user @<user>)`);                            
-                            return;
-                        }
-                        if(msg.mentions.users.size == 2) { // good, bot + user
-                            // console.log(msg.mentions.users);
-                            msg.mentions.users.forEach(async (user) => {
-                                if(user.id == client.user.id) {
-                                    console.log(`Found client (bot) user id, skipping.`);
+                    if(checkMsg[2].toLowerCase() == 'role') {
+                        if(checkMsg[3] !== undefined) {
+                            if(checkMsg[3].toLowerCase() == 'off') {
+                                await setGuildSetting(msg.guild.id, 'roleToPing', 'none');
+                                msg.channel.send(`Disabled role mentions`);
+                                return;
+                            }
+                            if(msg.mentions.roles.size > 0) {
+                                let foundRoleId = checkMsg[3].slice(3,-1);
+                                try {
+                                    await setGuildSetting(msg.guild.id, 'roleToPing', foundRoleId);
+                                    let foundRoleMention = await msg.guild.roles.fetch(foundRoleId);
+                                    msg.channel.send({
+                                        content: `Set live notification role to ${foundRoleMention}`,
+                                        allowedMentions: {roles: [foundRoleMention.id]}
+                                    });                                
                                 }
-                                else {
-                                    console.log(user.id);
-                                    await setGuildSetting(msg.guild.id, 'watchedUserId', user.id);
-                                    msg.channel.send(`Set stream notifications user to ${user.username}`);
+                                catch(error) {
+                                    msg.channel.send(`Error setting role.`);
+                                    log('error', logChannel, `Error setting role for guild ${msg.guild.id}`);
+                                    console.log(error);
                                 }
-                            });
+                            }
+                            else {
+                                console.log(`no role mentions`);
+                                msg.channel.send(`Couldn't find role. (Format: set live role @<role>)`);
+                            }
+                        }
+                    }
+                    if(checkMsg[2].toLowerCase() == 'user') {
+                        if(checkMsg[3] !== undefined) {
+                            if(checkMsg[3].toLowerCase() == 'all') {
+                                await setGuildSetting(msg.guild.id, 'watchedUserId', 'all');
+                                msg.channel.send(`Set stream notifications to all users.`);
+                                return;                            
+                            }
+                            if(checkMsg[3].toLowerCase() == 'off') {
+                                await setGuildSetting(msg.guild.id, 'watchedUserId', '');
+                                msg.channel.send(`Disabled stream notifications. Now I'm bored.`);
+                                return;                            
+                            }
+                            if(msg.mentions.users.size < 2) {
+                                msg.channel.send(`Error: No user mentioned. (Format: set live user @<user>)`);
+                                return; 
+                            }   
+                            if(msg.mentions.users.size > 2) {
+                                msg.channel.send(`Error: More than one user mentioned. (Format: set live user @<user>)`);                            
+                                return;
+                            }
+                            if(msg.mentions.users.size == 2) { // good, bot + user
+                                // console.log(msg.mentions.users);
+                                msg.mentions.users.forEach(async (user) => {
+                                    if(user.id != client.user.id) {
+                                        await setGuildSetting(msg.guild.id, 'watchedUserId', user.id);
+                                        msg.channel.send(`Set stream notifications user to ${user.username}`);
+                                    }
+                                    // else {
+                                    //     console.log(`Found client (bot) user id, skipping.`);
+                                    // }
+                                });
+                            }
                         }
                     }
                 }
             }
             if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'clips') {
-                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'channel') {
-                    if(checkMsg[3] !== undefined) {
-                        let findChan = checkMsg[3].slice(2,-1);
-                        try {
-                            let foundChan = await client.channels.fetch(findChan);
-                            let foundChanId = await client.channels.resolveId(foundChan);                 
-                            await setGuildSetting(msg.guild.id, 'checkTwitchClips', true);
-                            await setGuildSetting(msg.guild.id, 'discordClipsChannel', foundChanId);
-                            console.log(`Set clips channel for guild ${msg.guild.id} to ${foundChanId}`);
-                            msg.channel.send(`Set clips channel to ${foundChan}`);
+                if(checkMsg[2] !== undefined) {
+                    if(checkMsg[2].toLowerCase() == 'channel') {
+                        if(checkMsg[3] !== undefined) {
+                            let findChan = checkMsg[3].slice(2,-1);
+                            try {
+                                let foundChan = await client.channels.fetch(findChan);
+                                let foundChanId = await client.channels.resolveId(foundChan);                 
+                                await setGuildSetting(msg.guild.id, 'checkTwitchClips', true);
+                                await setGuildSetting(msg.guild.id, 'discordClipsChannel', foundChanId);
+                                console.log(`Set clips channel for guild ${msg.guild.id} to ${foundChanId}`);
+                                msg.channel.send(`Set clips channel to ${foundChan}`);
+                            }
+                            catch(error) {
+                                msg.channel.send(`Error adding channel`);
+                                log('error', logChannel, `Error adding channel. ${error}`);
+                                console.log(error);
+                            }
                         }
-                        catch(error) {
-                            msg.channel.send(`Error adding channel`);
-                            log('error', logChannel, `Error adding channel. ${error}`);
+                        else {
+                            msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
+                        }
+                    }
+                    if(checkMsg[2].toLowerCase() == 'off') {
+                        try {
+                            await setGuildSetting(msg.guild.id, 'checkTwitchClips', false);
+                            await setGuildSetting(msg.guild.id, 'discordClipsChannel', '');
+                            console.log(`Disabled clips channel for guild ${msg.guild.id}`);
+                            msg.channel.send(`Disabled clips notification`);
+                        }
+                        catch {
+                            msg.channel.send(`Error disabling clips channel`);
+                            log('error', logChannel, `Error disabling clips channel ${error}`);
                             console.log(error);
                         }
                     }
-                    else {
-                        msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
-                    }
-                }
-                if(checkMsg[2] !== undefined && checkMsg[2].toLowerCase() == 'off') {
-                    try {
-                        await setGuildSetting(msg.guild.id, 'checkTwitchClips', false);
-                        await setGuildSetting(msg.guild.id, 'discordClipsChannel', '');
-                        console.log(`Disabled clips channel for guild ${msg.guild.id}`);
-                        msg.channel.send(`Disabled clips notification`);
-                    }
-                    catch {
-                        msg.channel.send(`Error disabling clips channel`);
-                        log('error', logChannel, `Error disabling clips channel ${error}`);
-                        console.log(error);
-                    }
-                }
-                if(checkMsg[2] !== undefined) {
                     if(checkMsg[2].toLowerCase() == 'for' || checkMsg[2].toLowerCase() == 'user') { // command aliases! 
                         if(checkMsg[3] !== undefined) {
                             try {
