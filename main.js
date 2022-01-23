@@ -14,7 +14,7 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 var sentStreamMessages = {};
 var cleanupStreamEmbedsTimer;
 var logChannel = null;
-var discordClipsChannel = null;
+// var discordClipsChannel = null;
 var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
 var sentTestMessages = {}; 
@@ -45,20 +45,29 @@ async function cleanupStreamEmbeds() {
 
 async function checkTwitchClips() {
     try {
-        let clipsResult = await getTwichClips(botSettings.twitchClipsChannel);
-        const clipList = await getClipList();
-        clipsResult.forEach(async (clip) => {
-            let foundClip = false;
-            if(clipList !== undefined) {
-                if(clipList.includes(clip.id)) {
-                    console.log(`Found clip ${clip.id} in list, skipping.`);
-                    log('info', logChannel, `Found clip ${clip.id} in list, skipping.`);
-                    foundClip = true;
-                }
+        client.guilds.cache.forEach(async(g) => {
+            const guildSettings = await getAllGuildSettings(g.id);
+            if(guildSettings.twitchClipsChannel !== undefined && guildSettings.discordClipsChannel !== undefined) {
+                let clipsResult = await getTwichClips(guildSettings.twitchClipsChannel);
+                const clipList = await getClipList();
+                clipsResult.forEach(async (clip) => {
+                    let foundClip = false;
+                    if(clipList !== undefined) {
+                        if(clipList.includes(clip.id)) {
+                            console.log(`Found clip ${clip.id} in list, skipping.`);
+                            log('info', logChannel, `Found clip ${clip.id} in list, skipping.`);
+                            foundClip = true;
+                        }
+                    }
+                    if(!foundClip) {
+                        await addClip(clip.id);
+                        const discordClipsChannel = client.channels.resolve(guildSettings.discordClipsChannel);                        
+                        discordClipsChannel.send(`${clip.url}`);
+                    }
+                });
             }
-            if(!foundClip) {
-                await addClip(clip.id);
-                discordClipsChannel.send(`${clip.url}`);
+            else { 
+                console.log(`No clips settings found for guild ${g.id}, skipping.`);
             }
         });
     }
@@ -78,14 +87,15 @@ client.once('ready', () => {
     }
     else { console.log(`Log channel not set, skipping lookup`); }    
     if(botSettings.checkTwitchClips) {
-        if(botSettings.discordClipsChannel.length > 1) {
-            discordClipsChannel = client.channels.resolve(botSettings.discordClipsChannel);
-            console.log(`Found clips channel ${discordClipsChannel}`);
-            clipsCheckTime = botSettings.clipsCheckTime*60000;
-            // clipsCheckTime = 60000;
-            clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);
-        }
-        else { console.log(`Twitch clips channel not set, skipping lookup`); }    
+        clipsCheckTime = botSettings.clipsCheckTime*60000;
+        clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);        
+        // if(botSettings.discordClipsChannel.length > 1) {
+            // discordClipsChannel = client.channels.resolve(botSettings.discordClipsChannel);
+            // console.log(`Found clips channel ${discordClipsChannel}`);
+            // clipsCheckTime = botSettings.clipsCheckTime*60000;
+            // clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);
+        // }
+        // else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)

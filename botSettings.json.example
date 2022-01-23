@@ -10,5 +10,6 @@
     "botOwnerID": "",
     "checkTwitchClips": false,
     "clipsCheckTime": 60,
-    "guildSettingsDir":"c:\\sipa\\guildSettings\\"
+    "guildSettingsDir":"c:\\sipa\\guildSettings\\",
+    "clipsList":"c:\\sipa\\clipsList.sipa"
 }

@@ -1,12 +1,12 @@
 const fs = require('fs');
 const util = require('util');
-const clipListFilename = './clipList.sipa';
+const botSettings = require('../botSettings.json');
 
 async function getClipList() {
     const readFile = util.promisify(fs.readFile);
-    if(fs.existsSync(clipListFilename)) {
+    if(fs.existsSync(botSettings.clipsList)) {
         try {
-            const clipList = await readFile(clipListFilename);
+            const clipList = await readFile(botSettings.clipsList);
             const clipListString = clipList.toString();
             const clipListArray = clipListString.split(',');
             return clipListArray;
@@ -16,14 +16,14 @@ async function getClipList() {
         }
     }
     else {
-        console.error(`Could not load file ${clipListFilename}`);
+        console.error(`Could not load file ${botSettings.clipsList}`);
     }
 }
 
 async function addClip(newClip) {
     const appendFile = util.promisify(fs.appendFile);
     try {
-        await appendFile(clipListFilename,`${newClip},`);
+        await appendFile(botSettings.clipsList,`${newClip},`);
         console.log(`Added ${newClip} to clip list file`);
     }
     catch(error) {
