@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0] - 2022-01-
 ### Changed
 - Changed clips to work with multiple guilds
+- Cleaned up help message formatting
 
 ## [0.6.0] - 2022-01-22
 ### Added 
