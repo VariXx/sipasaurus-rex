@@ -1,18 +1,14 @@
 {
     "discordToken": "",
-    "cmdPrefix": "!",
     "activity": "I am error",
     "notificationChannelId": "",
     "roleToPing": "none",
     "twitchClientId": "",
     "twitchToken": "",
-    "watchedUserId": "all",
     "logChannel": "",
     "logLevel": "3",
     "botOwnerID": "",
     "checkTwitchClips": false,
-    "twitchClipsChannel": "",
-    "discordClipsChannel": "",
     "clipsCheckTime": 60,
-    "guildSettingsDir":"d:\\frogbot\\guildSettings\\"
+    "guildSettingsDir":"c:\\sipa\\guildSettings\\"
 }
