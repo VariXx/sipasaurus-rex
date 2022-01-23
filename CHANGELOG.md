@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [0.6.0] - 2022-01-
+## [0.6.0] - 2022-01-22
 ### Added 
-- Added commands to change settings
-- Added per guild settings
+- Added commands to change settings in chat
+- Added support for multiple guilds
 
 ### Changed
 - Changed commands from prefix to bot mentions
+- Changed activity message to use message in bot settings
 
 ## [0.5.0] - 2022-01-11
 ### Added 
@@ -53,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2021-10-04
 ### Initial Release
 
+[0.6.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.6.0
 [0.5.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.5.0
 [0.4.1]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.4.1
 [0.4.0]: https://github.com/aosterwyk/sipasaurus-rex/tree/v0.4.0
