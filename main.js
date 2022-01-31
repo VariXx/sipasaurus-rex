@@ -167,7 +167,7 @@ async function processCommand(msg) {
                             }
                         }
                         else {
-                            msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
+                            msg.channel.send("Couldn't read channel name. (Syntax: `set live channel #channel`)");
                         }
                     }
                     if(checkMsg[2].toLowerCase() == 'role') {
@@ -195,7 +195,7 @@ async function processCommand(msg) {
                             }
                             else {
                                 console.log(`no role mentions`);
-                                msg.channel.send(`Couldn't find role. (Format: set live role @<role>)`);
+                                msg.channel.send("Couldn't find role. (Syntax: `set live role @<role>`)");
                             }
                         }
                     }
@@ -212,11 +212,11 @@ async function processCommand(msg) {
                                 return;                            
                             }
                             if(msg.mentions.users.size < 2) {
-                                msg.channel.send(`Error: No user mentioned. (Format: set live user @<user>)`);
+                                msg.channel.send("Error: No user mentioned. (Syntax: `set live user @<user>`)");
                                 return; 
                             }   
                             if(msg.mentions.users.size > 2) {
-                                msg.channel.send(`Error: More than one user mentioned. (Format: set live user @<user>)`);                            
+                                msg.channel.send("Error: More than one user mentioned. (Syntax: `set live user @<user>`)");
                                 return;
                             }
                             if(msg.mentions.users.size == 2) { // good, bot + user
@@ -255,7 +255,7 @@ async function processCommand(msg) {
                             }
                         }
                         else {
-                            msg.channel.send(`Couldn't read channel name. (Format: set live channel #channel)`);
+                            msg.channel.send("Couldn't read channel name. (Syntax: `set live channel #channel`)");
                         }
                     }
                     if(checkMsg[2].toLowerCase() == 'off') {
@@ -285,7 +285,7 @@ async function processCommand(msg) {
                             }
                         }
                         else {
-                            msg.channel.send(`Couldn't read twitch user. (Format: set clips user <twitch usename>)`);
+                            msg.channel.send("Couldn't read twitch user. (Syntax: `set clips user <twitch usename>`)");
                         }
                     }
                 }
