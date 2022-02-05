@@ -135,6 +135,17 @@ async function processCommand(msg) {
             return;
         }
     }
+    if(command == 'stats' || command == 'status') {
+        if(msg.author.id == botSettings.botOwnerID) {        
+            let botEmote = `:t_rex:`;
+            if(client.user.username == "Buzzyflop") { botEmote = `:rabbit:`; }
+            let sentStreamMessagesCount = Object.keys(sentStreamMessages).length;
+            let statsString = `${version}\nUptime: ${client.uptime}ms\nGuilds: ${client.guilds.cache.size}\nChannels: ${client.channels.cache.size}\nUsers: ${client.users.cache.size}\nLog channel: ${logChannel}\nActive messages: ${sentStreamMessagesCount}\n`;
+            console.log(statsString);
+            msg.channel.send(`${botEmote} ${client.user.username} (\`${client.user.id}\`)\n${statsString}`);
+            return;
+        }
+    }
     if(command == 'invite') {
         const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=2147994688`; 
         msg.channel.send(`Add me to your server: ${inviteUrl}`);   
