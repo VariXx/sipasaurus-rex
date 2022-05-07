@@ -99,8 +99,32 @@ client.once('ready', () => {
         // else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
+    checkTwitchConnection();
+    checkTwitchConnection = setInterval(checkTwitchConnection,60*60000); // 1 hour 
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
+
+async function checkTwitchConnection() {
+    let twitchConnectionFailed = false;
+    console.log(`Testing twitch connection...`);
+    try {
+        const twitchConnection = await getStreamInfo('varixx');
+        if(twitchConnection === false) { 
+            twitchConnectionFailed = true;
+        }
+    }
+    catch(error) {
+        console.log(`Error testing twitch connection.`);
+        twitchConnectionFailed = true;
+    }
+    if(twitchConnectionFailed) {
+        const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
+        await log(`error`, logChannel, `Twitch connection failed. Exiting.`);
+        await logChannel.send(`<${tokenUrl}>`);
+        process.exit();        
+    }
+    else { console.log(`Success!`); }
+}
 
 async function processCommand(msg) {
     let checkMsg = msg.content.split(' ');

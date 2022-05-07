@@ -2,21 +2,39 @@ const fetch = require('node-fetch');
 const botSettings = require('../botSettings.json');
 
 async function twitchAPI(url) {
-    let result = await fetch(url, {method: 'get', headers: {'Client-ID': botSettings.twitchClientId, 'Authorization': `Bearer ${botSettings.twitchToken}`}});
-    result = await result.json();
-    return result;
+    try {
+        let result = await fetch(url, {method: 'get', headers: {'Client-ID': botSettings.twitchClientId, 'Authorization': `Bearer ${botSettings.twitchToken}`}});
+        result = await result.json();
+        return result;
+    }
+    catch(error) {
+        console.log(`Twitch API error: ${error}`);
+        return false;
+    }
 }
 
 async function getStreamInfo(channelName) {
-    let url = `https://api.twitch.tv/helix/streams?user_login=${channelName}`;
-    const result = await twitchAPI(url);
-    return result.data[0];
+    try {
+        let url = `https://api.twitch.tv/helix/streams?user_login=${channelName}`;
+        const result = await twitchAPI(url);
+        return result.data[0];
+    }
+    catch(error) {
+        console.log(`Twitch API error: ${error}`);
+        return false;
+    }
 }
 
 async function getTwitchUserInfo(twitchUsername) {
-    let url = `https://api.twitch.tv/helix/users?login=${twitchUsername}`;
-    const result = await twitchAPI(url);
-    return result.data[0];
+    try {
+        let url = `https://api.twitch.tv/helix/users?login=${twitchUsername}`;
+        const result = await twitchAPI(url);
+        return result.data[0];
+    }
+    catch(error) {
+        console.log(`Twitch API error: ${error}`);
+        return false;
+    }
 }
 
 async function getTwichClips(twitchUsername) {
@@ -55,6 +73,7 @@ async function getStreamMarkers(videoId) {
     }
     // return result.data;
 }
+
 
 module.exports.getStreamInfo = getStreamInfo;
 module.exports.getTwitchUserInfo = getTwitchUserInfo;
