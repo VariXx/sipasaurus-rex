@@ -105,25 +105,33 @@ client.once('ready', () => {
 });
 
 async function checkTwitchConnection() {
-    let twitchConnectionFailed = false;
+    // let twitchConnectionFailed = false;
+    let twitchConnectionCheck = false; 
     console.log(`Testing twitch connection...`);
     try {
         const twitchConnection = await getStreamInfo('varixx');
         if(twitchConnection === false) { 
-            twitchConnectionFailed = true;
+            // twitchConnectionFailed = true;
+            twitchConnectionCheck = false; 
+        }
+        else {
+            twitchConnectionCheck = true; 
         }
     }
     catch(error) {
         console.log(`Error testing twitch connection.`);
-        twitchConnectionFailed = true;
+        // twitchConnectionFailed = true;
+        twitchConnectionCheck = false; 
     }
-    if(twitchConnectionFailed) {
+    // if(twitchConnectionFailed) {
+    if(!twitchConnectionCheck) {
         const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
         await log(`error`, logChannel, `Twitch connection failed. Exiting.`);
         await logChannel.send(`<${tokenUrl}>`);
-        process.exit();        
+        process.exit(); 
     }
     else { console.log(`Success!`); }
+    return twitchConnectionCheck;
 }
 
 async function processCommand(msg) {
@@ -157,6 +165,17 @@ async function processCommand(msg) {
             const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
             msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
             return;
+        }
+    }
+    if(command == 'twitchtoken') {
+        if(msg.author.id == botSettings.botOwnerID) {        
+            const twitchTokenTest = await checkTwitchConnection();
+            if(twitchTokenTest) {
+                msg.channel.send(`Twitch test connection successful.`);
+            }
+            else {
+                msg.channel.send(`Twitch test connection failed.`);
+            }
         }
     }
     if(command == 'stats' || command == 'status') {
