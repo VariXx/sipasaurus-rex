@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
+## [0.9.0] - 2023-03-01
+### Added
+- Added twitch connection test command
+
+### Fixed
+- Fixed twitch connection test timer
+
 ## [0.8.0] - 2022-05-09
 ### Added
 - Added twitch connection test
