@@ -17,6 +17,7 @@ var logChannel = null;
 // var discordClipsChannel = null;
 var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
+var checkTwitchConnectionInterval;
 var sentTestMessages = {}; 
 
 async function cleanupStreamEmbeds() {
@@ -100,7 +101,7 @@ client.once('ready', () => {
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
     checkTwitchConnection();
-    checkTwitchConnection = setInterval(checkTwitchConnection,60*60000); // 1 hour 
+    checkTwitchConnectionInterval = setInterval(checkTwitchConnection,60*60000); // 1 hour 
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
 
