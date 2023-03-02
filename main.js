@@ -167,7 +167,7 @@ async function processCommand(msg) {
             return;
         }
     }
-    if(command == 'twitchtoken') {
+    if(command == 'tokentest') {
         if(msg.author.id == botSettings.botOwnerID) {        
             const twitchTokenTest = await checkTwitchConnection();
             if(twitchTokenTest) {
