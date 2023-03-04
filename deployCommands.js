@@ -21,13 +21,19 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 // and deploy your commands!
 (async () => {
 	try {
-		// // remove commands
+		// remove commands
+		// per guild
 		// const removeCommands = await rest.put(Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), { body: [] })
 		// .then(() => console.log('Successfully deleted all guild commands.'))
 		// .catch(console.error);		
 
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+		// all guilds
+		// rest.put(Routes.applicationCommands(clientId), { body: [] })
+		// 	.then(() => console.log('Successfully deleted all application commands.'))
+		// 	.catch(console.error);		
+
 		// register commands
+		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
 			Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), // use for test guild
