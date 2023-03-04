@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
+## [1.0.0] - 2023-03-03
+### Added
+- Added slash commands
+
+### Changed
+- Updated discord.js to v14
+
+### Fixed
+- Fixed bot activity message for discord.js v13/v14
+
 ## [0.9.0] - 2023-03-01
 ### Added
 - Added twitch connection test command

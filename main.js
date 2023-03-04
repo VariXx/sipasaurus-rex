@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Collection, ActivityType } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
 const { getGuildSetting, getAllGuildSettings } = require('./utils/getGuildSettings');
@@ -12,7 +12,7 @@ const { getClipList, addClip } = require('./utils/clipList');
 const { getTwichClips, getStreamInfo } = require('./utils/twitchApi');
 
 // const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
-const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences] });
+const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences]});
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -103,7 +103,7 @@ for (const file of commandFiles) {
 client.once('ready', () => {
     console.log(`${client.user.username} connected`);
     if(botSettings.activity !== undefined) {
-        client.user.setActivity({name: `${botSettings.activity} | ${version}`, type: 'WATCHING'});
+        client.user.setActivity( `${botSettings.activity} | ${version}`, {type: ActivityType.Watching});
     }
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
