@@ -1,6 +1,6 @@
 {
   "name": "sipasaurus-rex",
-  "version": "0.9.0",
+  "version": "1.0.0-alpha.1",
   "description": "Sipasaurus Rex is a discord bot that sends messages when a user is live on twitch based on the user's discord status.",
   "main": "main.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Aaron Osterwyk",
   "license": "Apache-2.0",
   "dependencies": {
-    "discord.js": "^13.1.0",
+    "discord.js": "^14.7.1",
     "node-fetch": "^2.6.7"
   }
 }
