@@ -1,15 +1,18 @@
 {
     "discordToken": "",
+    "discordClientId": "",
     "activity": "I am error",
     "notificationChannelId": "",
     "roleToPing": "none",
     "twitchClientId": "",
     "twitchToken": "",
+    "watchedUserId": "",    
     "logChannel": "",
     "logLevel": "3",
     "botOwnerID": "",
     "checkTwitchClips": false,
     "clipsCheckTime": 60,
     "guildSettingsDir":"c:\\sipa\\guildSettings\\",
-    "clipsListDir":"c:\\sipa\\clipsList\\"
+    "clipsListDir":"c:\\sipa\\clipsList\\",
+    "testGuildId":""
 }

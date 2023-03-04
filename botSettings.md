@@ -2,6 +2,9 @@
 ## discordToken
 Discord token used by the bot. You can find this in the [Discord developer portal](https://discord.com/developers/applications). 
 
+## discordClientId 
+Discord client ID used by the bot. You can find this in the [Discord developer portal](https://discord.com/developers/applications). 
+
 ## cmdPrefix
 Command prefix used by the bot. Changing this to "/" will **not** enable slash commands. 
 

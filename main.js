@@ -1,4 +1,6 @@
-const { Client, Intents } = require('discord.js');
+const fs = require('node:fs');
+const path = require('node:path');
+const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
 const { getGuildSetting, getAllGuildSettings } = require('./utils/getGuildSettings');
@@ -9,7 +11,12 @@ const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 const { getTwichClips, getStreamInfo } = require('./utils/twitchApi');
 
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
+// const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
+const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences] });
+
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 var sentStreamMessages = {};
 var cleanupStreamEmbedsTimer;
@@ -76,6 +83,20 @@ async function checkTwitchClips() {
     catch(error) {
         console.log(error);
     }    
+}
+
+// run node deployCommands.js if adding any commands
+
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+
+    if('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+    }
+    else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+    }
 }
 
 client.once('ready', () => {
@@ -148,26 +169,26 @@ async function processCommand(msg) {
         log('info', logChannel, `Empty command (${msg}), ignoring.`);
         return;
     }
-    if(command == 'hey') {
-        if(msg.author.id == botSettings.botOwnerID) {
-            if(client.user.username == "Buzzyflop") { msg.channel.send(`:rabbit:`); }
-            else { msg.channel.send(`:t_rex:`); }
-            return;
-        }
-    }
-    if(command == 'purpose') {
-        if(msg.author.id == botSettings.botOwnerID) {
-            msg.channel.send(`:butter:`);
-            return;
-        }
-    }
-    if(command == 'twitchtoken') {
-        if(msg.author.id == botSettings.botOwnerID) {        
-            const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
-            msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
-            return;
-        }
-    }
+    // if(command == 'hey') {
+    //     if(msg.author.id == botSettings.botOwnerID) {
+    //         if(client.user.username == "Buzzyflop") { msg.channel.send(`:rabbit:`); }
+    //         else { msg.channel.send(`:t_rex:`); }
+    //         return;
+    //     }
+    // }
+    // if(command == 'purpose') {
+    //     if(msg.author.id == botSettings.botOwnerID) {
+    //         msg.channel.send(`:butter:`);
+    //         return;
+    //     }
+    // }
+    // if(command == 'twitchtoken') {
+    //     if(msg.author.id == botSettings.botOwnerID) {        
+    //         const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
+    //         msg.channel.send(`Don't click this unless you asked for it: <${tokenUrl}>`);        
+    //         return;
+    //     }
+    // }
     if(command == 'tokentest') {
         if(msg.author.id == botSettings.botOwnerID) {        
             const twitchTokenTest = await checkTwitchConnection();
@@ -350,6 +371,31 @@ async function processCommand(msg) {
 }
 
 client.login(botSettings.discordToken);
+
+client.on(Events.InteractionCreate, async interaction => {
+    if(!interaction.isChatInputCommand()) return;
+    console.log(interaction);
+    
+    const command = interaction.client.commands.get(interaction.commandName);
+
+    if(!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    }
+    catch(error) {
+        console.error(error);
+        if(interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+        else {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+    }
+});
 
 client.on('messageCreate', async (msg) => {
     if(msg.author == client.user) { return; } // ignore messages sent by bot
