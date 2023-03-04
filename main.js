@@ -10,6 +10,7 @@ const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 const { getTwichClips, getStreamInfo } = require('./utils/twitchApi');
+const { checkTwitchConnection } = require('./utils/checkTwitchConnection');
 
 // const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES] });
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences]});
@@ -123,38 +124,20 @@ client.once('ready', () => {
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
     checkTwitchConnection();
-    checkTwitchConnectionInterval = setInterval(checkTwitchConnection,60*60000); // 1 hour 
+    // checkTwitchConnectionInterval = setInterval(checkTwitchConnection,60*60000); // 1 hour // change this to a new function and send a message if the check fails
+    // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
+    checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
 
-async function checkTwitchConnection() {
-    // let twitchConnectionFailed = false;
-    let twitchConnectionCheck = false; 
-    console.log(`Testing twitch connection...`);
-    try {
-        const twitchConnection = await getStreamInfo('varixx');
-        if(twitchConnection === false) { 
-            // twitchConnectionFailed = true;
-            twitchConnectionCheck = false; 
-        }
-        else {
-            twitchConnectionCheck = true; 
-        }
-    }
-    catch(error) {
-        console.log(`Error testing twitch connection.`);
-        // twitchConnectionFailed = true;
-        twitchConnectionCheck = false; 
-    }
-    // if(twitchConnectionFailed) {
-    if(!twitchConnectionCheck) {
+async function twitchTokenHeartbeat() {
+    const twitchStatus = await checkTwitchConnection();
+    if(!twitchStatus) {
         const tokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${botSettings.twitchClientId}&redirect_uri=https://acceptdefaults.com/twitch-oauth-token-generator/&response_type=token&scope=user:read:broadcast`;
         await log(`error`, logChannel, `Twitch connection failed. Exiting.`);
-        await logChannel.send(`<${tokenUrl}>`);
-        process.exit(); 
+        await logChannel.send(`<${tokenUrl}>`);        
+        process.exit();
     }
-    else { console.log(`Success!`); }
-    return twitchConnectionCheck;
 }
 
 async function processCommand(msg) {
@@ -190,17 +173,17 @@ async function processCommand(msg) {
     //         return;
     //     }
     // }
-    if(command == 'tokentest') {
-        if(msg.author.id == botSettings.botOwnerID) {        
-            const twitchTokenTest = await checkTwitchConnection();
-            if(twitchTokenTest) {
-                msg.channel.send(`Twitch test connection successful.`);
-            }
-            else {
-                msg.channel.send(`Twitch test connection failed.`);
-            }
-        }
-    }
+    // if(command == 'tokentest') {
+    //     if(msg.author.id == botSettings.botOwnerID) {        
+    //         const twitchTokenTest = await checkTwitchConnection();
+    //         if(twitchTokenTest) {
+    //             msg.channel.send(`Twitch test connection successful.`);
+    //         }
+    //         else {
+    //             msg.channel.send(`Twitch test connection failed.`);
+    //         }
+    //     }
+    // }
     if(command == 'stats' || command == 'status') {
         if(msg.author.id == botSettings.botOwnerID) {        
             let botEmote = `:t_rex:`;

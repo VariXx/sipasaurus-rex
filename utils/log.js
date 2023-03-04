@@ -1,4 +1,4 @@
-const { Util } = require('discord.js');
+const { escapeMarkdown } = require('discord.js');
 const logLevel = require('../botSettings.json').logLevel;
 const logChannel = require('../botSettings.json').logChannel;
 
@@ -9,7 +9,8 @@ logLevel
 
 async function log(logType, channel, msg) {
     let logMsg = '';
-    let escMsg = Util.escapeMarkdown(msg);    
+    // let escMsg = Util.escapeMarkdown(msg);    
+    let escMsg = escapeMarkdown(msg);
     if(logType.toLowerCase() == 'info') {
         logMsg = `[Info] ${msg}`;
         if(logLevel >= 2 && logChannel.length > 1) {
