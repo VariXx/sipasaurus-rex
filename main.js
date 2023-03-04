@@ -195,11 +195,11 @@ async function processCommand(msg) {
             return;
         }
     }
-    if(command == 'invite') {
-        const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=2147994688`; 
-        msg.channel.send(`Add me to your server: ${inviteUrl}`);   
-        return; 
-    }
+    // if(command == 'invite') {
+    //     const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=2147994688`; 
+    //     msg.channel.send(`Add me to your server: ${inviteUrl}`);   
+    //     return; 
+    // }
     // if(command == 'help' || command == '?') {
     //     if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
     //         const helpMsg = await helpEmbed(msg.author.username);
