@@ -1,12 +1,12 @@
-const { MessageEmbed, Util } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 async function helpEmbed(requestedBy){
     try {
-        const helpEmbed = new MessageEmbed()
+        const helpEmbed = new EmbedBuilder()
         .setColor('#ffff00')
         // .setTitle('Help')
-        .setDescription('Mention me with one of the commands below')
-        .addFields(
+        .setDescription('Command list')
+        .addFields([
             { name: 'help',value: 'Displays this message.'},
             { name: 'invite', value: 'Send URL to add me to your Discord server.'},
             // { name: '\u200B', value: '\u200B' },
@@ -19,8 +19,7 @@ async function helpEmbed(requestedBy){
             { name: '**set clips channel**', value: 'Discord channel to send notification messages when a new clip is created on twitch.'},
             { name: '**set clips user**', value: 'Twitch channel name to watch for new clips.'},
             { name: '**set clips off**', value: 'Disable twitch clip notification messages.'}
-        )
-        .setFooter(`Requested by ${requestedBy}`);
+        ]);
 
         return helpEmbed;
     }
@@ -31,9 +30,6 @@ async function helpEmbed(requestedBy){
 }
 
 module.exports.helpEmbed = helpEmbed;
-// Mention me with one of the commands below.
-
-
 // **Stream Notifications**
 // **set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
 // **set live role @<role>**: Role to mention in stream notification messages.

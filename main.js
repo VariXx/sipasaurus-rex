@@ -5,7 +5,7 @@ const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
 const { getGuildSetting, getAllGuildSettings } = require('./utils/getGuildSettings');
 const { setGuildSetting } = require('./utils/setGuildSetting');
-const { helpEmbed } = require('./utils/helpEmbed');
+// const { helpEmbed } = require('./utils/helpEmbed');
 const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
@@ -125,8 +125,8 @@ client.once('ready', () => {
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
     checkTwitchConnection();
     // checkTwitchConnectionInterval = setInterval(checkTwitchConnection,60*60000); // 1 hour // change this to a new function and send a message if the check fails
-    // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
-    checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
+    checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
+    // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
 });
 
@@ -200,12 +200,12 @@ async function processCommand(msg) {
         msg.channel.send(`Add me to your server: ${inviteUrl}`);   
         return; 
     }
-    if(command == 'help' || command == '?') {
-        if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
-            const helpMsg = await helpEmbed(msg.author.username);
-            msg.channel.send({embeds: [helpMsg]});
-        }
-    }
+    // if(command == 'help' || command == '?') {
+    //     if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
+    //         const helpMsg = await helpEmbed(msg.author.username);
+    //         msg.channel.send({embeds: [helpMsg]});
+    //     }
+    // }
     if(command == 'set') {
         if(msg.author.id == botSettings.botOwnerID || msg.author.id == msg.channel.guild.onwerID) {
             if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'live') {
@@ -358,7 +358,7 @@ client.login(botSettings.discordToken);
 
 client.on(Events.InteractionCreate, async interaction => {
     if(!interaction.isChatInputCommand()) return;
-    console.log(interaction);
+    // console.log(interaction);
     
     const command = interaction.client.commands.get(interaction.commandName);
 
