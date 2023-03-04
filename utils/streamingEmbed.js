@@ -1,4 +1,4 @@
-const { MessageEmbed, Util } = require('discord.js');
+const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const twitchApi = require('./twitchApi');
 
 async function streamingEmbed(twitchUsername, msgAuthor) {
@@ -7,10 +7,10 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         const streamInfo = await twitchApi.getStreamInfo(twitchUsername);
         let urlTimestamp = Date.now();
         const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg?${urlTimestamp}`);
-        let streamTitle = Util.escapeMarkdown(streamInfo.title);
+        let streamTitle = escapeMarkdown(streamInfo.title);
         let channelUrl = `https://twitch.tv/${twitchInfo.display_name}`;
 
-        const returnEmbed = new MessageEmbed()
+        const returnEmbed = new EmbedBuilder()
         .setColor('#1EA8D7') // change this to use event color from channel info
         .setTitle(streamTitle)
         .setURL(channelUrl) // change this to get from twitchInfo 
@@ -18,8 +18,8 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         .setDescription(streamInfo.game_name)
         .setThumbnail(twitchInfo.profile_image_url)
         .setImage(thumbnailUrl) // change this to stream preview
-        .setTimestamp()
-        .setFooter(`Last updated`);
+        .setTimestamp();
+        // .setFooter(`Last updated`);
     
         return returnEmbed;
     }
@@ -39,7 +39,7 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         // const streamMarkers = await twitchApi.getStreamMarkers(twitchVideos[0].id, botSettings.twitchClientId, botSettings.twitchToken);
         // console.log(streamMarkers);
 
-        const returnEmbed = new MessageEmbed() 
+        const returnEmbed = new EmbedBuilder() 
         .setColor('#3d3d3f') 
         .setTitle(twitchVideos[0].title, twitchInfo.profile_image_url, vodUrl)
         .setURL(vodUrl) // change this to get from twitchInfo 
@@ -47,8 +47,8 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         .setDescription(`${msgAuthor} is offline`)
         .setThumbnail(twitchInfo.profile_image_url)
         .setImage(vodThumbnail)
-        .setTimestamp()
-        .setFooter(`Last updated`);
+        .setTimestamp();
+        // .setFooter(`Last updated`);
     
         return returnEmbed;
     }
