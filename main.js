@@ -26,6 +26,7 @@ var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
 var checkTwitchConnectionInterval;
 var sentTestMessages = {}; 
+var testMsg = "Can you read this?";
 
 async function cleanupStreamEmbeds() {
     // console.log(sentStreamMessages);

@@ -7,14 +7,14 @@ module.exports = {
         .setDescription('say hello'),
     async execute(interaction) {
         if(interaction.user.id == botSettings.botOwnerID) {
-            if(interaction.client.user.username == "Buzzyflop") { interaction.reply(`:rabbit:`); }
-            else { interaction.reply(`:t_rex:`); }
+            if(interaction.client.user.username == "Buzzyflop") { await interaction.reply(`:rabbit:`); }
+            else { await interaction.reply(`:t_rex:`); }
             return;
         }
         else {
             // still reply, but only reply to the user that send the command
-            if(interaction.client.user.username == "Buzzyflop") { interaction.reply({ content: `:rabbit:`, ephemeral: true }); }
-            else { interaction.reply({content: `:t_rex:`, ephemeral: true }); }
+            if(interaction.client.user.username == "Buzzyflop") { await interaction.reply({ content: `:rabbit:`, ephemeral: true }); }
+            else { await interaction.reply({content: `:t_rex:`, ephemeral: true }); }
             return;
         }
     },
