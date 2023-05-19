@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { setGuildSetting } = require('../utils/setGuildSetting');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,43 +14,39 @@ module.exports = {
         .addStringOption(option => 
             option.setName('twitchchannel')
                 .setDescription('Twitch channel to monitor for new clips'))
-        // .addStringOption(option =>
-        //     option.setName('option1')
-        //         .setDescription('option one'))
         ,
     async execute(interaction) {
-        // console.log(interaction.options);
         const clipsEnabled = interaction.options.getBoolean('enabled');
         const clipsDiscordChannel = interaction.options.getChannel('channel');
         const clipsTwitchChannel = interaction.options.getString('twitchchannel');
+        const guildId = interaction.guildId;
 
         if(clipsEnabled !== undefined && clipsEnabled !== null) {
-            console.log(clipsEnabled);
             if(clipsEnabled) {
-                // enable clips in guild settings
-                await interaction.reply({ content: `Clips enabled`, ephemeral: true});
-                // TODO - change setting in the bot
+                await setGuildSetting(guildId, 'checkTwitchClips', true);
+                await interaction.reply({ content: `Clip messages enabled`, ephemeral: true});
+                console.log(`Enabled clips for guild ${guildId}`);
             }
             else {
-                // disable clips in guild settings
-                await interaction.reply({ content: `Clips enabled`, ephemeral: true});
-                // TODO - change setting in the bot
+                await setGuildSetting(guildId, 'checkTwitchClips', false);
+                await interaction.reply({ content: `Clip messages disabled`, ephemeral: true});
+                console.log(`Disbaled clips for guild ${guildId}`);
             }
         }
         if(clipsDiscordChannel !== undefined && clipsDiscordChannel !== null) {
-            console.log(clipsDiscordChannel);
-            clipsDiscordChannel.send("I'll start posting clips in this channel.");
+            // enable clips setting for guild
+            await setGuildSetting(guildId, 'checkTwitchClips', true);            
+            // set clips message channel
+            await setGuildSetting(guildId, 'discordClipsChannel', interaction.channelId);
             interaction.reply({ content: `Set clips channel to ${clipsDiscordChannel}`, ephemeral: true});
-            // TODO - change setting in the bot
+            console.log(`Set clips channel for guild ${guildId} to ${clipsDiscordChannel}`);
+            clipsDiscordChannel.send("I'll start posting clips in this channel.");
         }
         if(clipsTwitchChannel !== undefined && clipsTwitchChannel !== null) {
-            await interaction.reply({ content: `Set twitch channel to ${clipsTwitchChannel}`, ephemeral: true});
-            // TODO - change setting in the bot
+            
+            await setGuildSetting(guildId, 'twitchClipsChannel', clipsTwitchChannel);
+            console.log(`Set clips user for guild ${guildId} to ${clipsTwitchChannel}`);
+            await interaction.reply({ content: `Set twitch channel to https://twitch.tv/${clipsTwitchChannel}`, ephemeral: true});
         }
-        // const option1String = interaction.options.getString('option1');
-        // await interaction.reply(`${interaction.user.username} ran the test command with option1: ${option1String}`);
-        // const clipsChanell = interaction.options.getc
     },
 };
-
-// https://discord.js.org/#/docs/builders/main/class/SlashCommandBuilder

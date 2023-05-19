@@ -295,61 +295,61 @@ async function processCommand(msg) {
                     }
                 }
             }
-            if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'clips') {
-                if(checkMsg[2] !== undefined) {
-                    if(checkMsg[2].toLowerCase() == 'channel') {
-                        if(checkMsg[3] !== undefined) {
-                            let findChan = checkMsg[3].slice(2,-1);
-                            try {
-                                let foundChan = await client.channels.fetch(findChan);
-                                let foundChanId = await client.channels.resolveId(foundChan);                 
-                                await setGuildSetting(msg.guild.id, 'checkTwitchClips', true);
-                                await setGuildSetting(msg.guild.id, 'discordClipsChannel', foundChanId);
-                                console.log(`Set clips channel for guild ${msg.guild.id} to ${foundChanId}`);
-                                msg.channel.send(`Set clips channel to ${foundChan}`);
-                            }
-                            catch(error) {
-                                msg.channel.send(`Error adding channel`);
-                                log('error', logChannel, `Error adding channel. ${error}`);
-                                console.log(error);
-                            }
-                        }
-                        else {
-                            msg.channel.send("Couldn't read channel name. (Syntax: `set live channel #channel`)");
-                        }
-                    }
-                    if(checkMsg[2].toLowerCase() == 'off') {
-                        try {
-                            await setGuildSetting(msg.guild.id, 'checkTwitchClips', false);
-                            await setGuildSetting(msg.guild.id, 'discordClipsChannel', '');
-                            console.log(`Disabled clips channel for guild ${msg.guild.id}`);
-                            msg.channel.send(`Disabled clips notification`);
-                        }
-                        catch {
-                            msg.channel.send(`Error disabling clips channel`);
-                            log('error', logChannel, `Error disabling clips channel ${error}`);
-                            console.log(error);
-                        }
-                    }
-                    if(checkMsg[2].toLowerCase() == 'for' || checkMsg[2].toLowerCase() == 'user') { // command aliases! 
-                        if(checkMsg[3] !== undefined) {
-                            try {
-                                await setGuildSetting(msg.guild.id, 'twitchClipsChannel', checkMsg[3]);
-                                console.log(`Set clips user for guild ${msg.guild.id} to ${checkMsg[3]}`);
-                                msg.channel.send(`Set clips user to ${checkMsg[3]} <https://twitch.tv/${checkMsg[3]}>`);
-                            }
-                            catch {
-                                msg.channel.send(`Error setting clips user`);
-                                log('error', logChannel, `Error setting clips user ${error}`);
-                                console.log(error);
-                            }
-                        }
-                        else {
-                            msg.channel.send("Couldn't read twitch user. (Syntax: `set clips user <twitch usename>`)");
-                        }
-                    }
-                }
-            }
+            // if(checkMsg[1] !== undefined && checkMsg[1].toLowerCase() == 'clips') {
+            //     if(checkMsg[2] !== undefined) {
+            //         if(checkMsg[2].toLowerCase() == 'channel') {
+            //             if(checkMsg[3] !== undefined) {
+            //                 let findChan = checkMsg[3].slice(2,-1);
+            //                 try {
+            //                     let foundChan = await client.channels.fetch(findChan);
+            //                     let foundChanId = await client.channels.resolveId(foundChan);                 
+            //                     await setGuildSetting(msg.guild.id, 'checkTwitchClips', true);
+            //                     await setGuildSetting(msg.guild.id, 'discordClipsChannel', foundChanId);
+            //                     console.log(`Set clips channel for guild ${msg.guild.id} to ${foundChanId}`);
+            //                     msg.channel.send(`Set clips channel to ${foundChan}`);
+            //                 }
+            //                 catch(error) {
+            //                     msg.channel.send(`Error adding channel`);
+            //                     log('error', logChannel, `Error adding channel. ${error}`);
+            //                     console.log(error);
+            //                 }
+            //             }
+            //             else {
+            //                 msg.channel.send("Couldn't read channel name. (Syntax: `set live channel #channel`)");
+            //             }
+            //         }
+            //         if(checkMsg[2].toLowerCase() == 'off') {
+            //             try {
+            //                 await setGuildSetting(msg.guild.id, 'checkTwitchClips', false);
+            //                 await setGuildSetting(msg.guild.id, 'discordClipsChannel', '');
+            //                 console.log(`Disabled clips channel for guild ${msg.guild.id}`);
+            //                 msg.channel.send(`Disabled clips notification`);
+            //             }
+            //             catch {
+            //                 msg.channel.send(`Error disabling clips channel`);
+            //                 log('error', logChannel, `Error disabling clips channel ${error}`);
+            //                 console.log(error);
+            //             }
+            //         }
+            //         if(checkMsg[2].toLowerCase() == 'for' || checkMsg[2].toLowerCase() == 'user') { // command aliases! 
+            //             if(checkMsg[3] !== undefined) {
+            //                 try {
+            //                     await setGuildSetting(msg.guild.id, 'twitchClipsChannel', checkMsg[3]);
+            //                     console.log(`Set clips user for guild ${msg.guild.id} to ${checkMsg[3]}`);
+            //                     msg.channel.send(`Set clips user to ${checkMsg[3]} <https://twitch.tv/${checkMsg[3]}>`);
+            //                 }
+            //                 catch {
+            //                     msg.channel.send(`Error setting clips user`);
+            //                     log('error', logChannel, `Error setting clips user ${error}`);
+            //                     console.log(error);
+            //                 }
+            //             }
+            //             else {
+            //                 msg.channel.send("Couldn't read twitch user. (Syntax: `set clips user <twitch usename>`)");
+            //             }
+            //         }
+            //     }
+            // }
         }
     }
 }
