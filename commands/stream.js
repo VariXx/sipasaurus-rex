@@ -9,7 +9,7 @@ module.exports = {
             option.setName('enabled')
                 .setDescription('enable stream notifications'))
         .addChannelOption(option =>
-            option.setName('channel')
+            option.setName('discordchannel')
                 .setDescription('Discord channel to send stream notifications'))
         .addStringOption(option =>
             option.setName('user')
@@ -22,11 +22,10 @@ module.exports = {
                 .setDescription('Role to mention'))
         ,
     async execute(interaction) {
-        console.log(interaction);
-
+        // console.log(interaction);
         const guildId = interaction.guild.id;
         const liveEnabled = interaction.options.getBoolean('enabled');
-        const discordChannel = interaction.options.getChannel('channel');
+        const discordChannel = interaction.options.getChannel('discordchannel');
         const twitchUser = interaction.options.getString('user');
         const mentionEnabled = interaction.options.getBoolean('mention');
         const mentionRole = interaction.options.getRole('role');
@@ -45,11 +44,11 @@ module.exports = {
         }
 
         if(discordChannel !== undefined && discordChannel !== null) {
-            await setGuildSetting(guildId, 'notificationChannelId', discordChannel); // TODO - this is broken. it puts the full JSON in the bot settings file. 
+            await setGuildSetting(guildId, 'notificationChannelId', discordChannel); 
             await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel}`, ephemeral: true});
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel}`);
         }       
-        // TODO - everything below is untested
+
         if(twitchUser !== undefined && twitchUser !== null) {
             if(twitchUser == "all") {
                 await setGuildSetting(guildId, 'watchedUserId', 'all');
@@ -62,7 +61,7 @@ module.exports = {
                 console.log(`Set stream notifications for guild ${guildId} for ${twitchUser}`);                
             }   
         }
-
+        // TODO - everything below is untested
         if(mentionEnabled !== undefined && mentionEnabled !== null) {
             if(!mentionEnabled) {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
