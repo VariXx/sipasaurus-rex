@@ -61,7 +61,7 @@ module.exports = {
                 console.log(`Set stream notifications for guild ${guildId} for ${twitchUser}`);                
             }   
         }
-        // TODO - everything below is untested
+
         if(mentionEnabled !== undefined && mentionEnabled !== null) {
             if(!mentionEnabled) {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
@@ -80,5 +80,3 @@ module.exports = {
         }
     },
 };
-
-// https://discord.js.org/#/docs/builders/main/class/SlashCommandBuilder
