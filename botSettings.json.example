@@ -14,5 +14,6 @@
     "clipsCheckTime": 60,
     "guildSettingsDir":"c:\\sipa\\guildSettings\\",
     "clipsListDir":"c:\\sipa\\clipsList\\",
+    "streamMessagesFilePath":"c:\\sipa\\streamMessages.json",
     "testGuildId":""
 }
