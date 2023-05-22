@@ -101,7 +101,7 @@ for (const file of commandFiles) {
     }
 }
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log(`${client.user.username} connected`);
     if(botSettings.activity !== undefined) {
         client.user.setActivity( `${botSettings.activity} | ${version}`, {type: ActivityType.Watching});
@@ -109,6 +109,9 @@ client.once('ready', () => {
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
+        await logChannel.send(`Bot started`);
+        let twitchCheck = await twitchTokenHeartbeat();
+        if(twitchCheck) { await logChannel.send(`Twitch connected`); }
     }
     else { console.log(`Log channel not set, skipping lookup`); }    
     if(botSettings.checkTwitchClips) {
@@ -123,8 +126,6 @@ client.once('ready', () => {
         // else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }
     else { console.log(`checkTwitchClips not enabled, skipping.`); }    
-    checkTwitchConnection();
-    // checkTwitchConnectionInterval = setInterval(checkTwitchConnection,60*60000); // 1 hour // change this to a new function and send a message if the check fails
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
@@ -138,6 +139,7 @@ async function twitchTokenHeartbeat() {
         await logChannel.send(`<${tokenUrl}>`);        
         process.exit();
     }
+    return true;
 }
 
 async function processCommand(msg) {
