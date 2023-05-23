@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { setGuildSetting } = require('../utils/setGuildSetting');
+const botSettings = require('../botSettings.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +17,10 @@ module.exports = {
                 .setDescription('Twitch channel to monitor for new clips'))
         ,
     async execute(interaction) {
+        if(interaction.user.id != botSettings.botOwnerID) { // TODO - include guild owner and admins
+            await interaction.reply({content: `Command restricted to bot owner.`, ephemeral: true});
+            return;
+        }        
         const clipsEnabled = interaction.options.getBoolean('enabled');
         const clipsDiscordChannel = interaction.options.getChannel('channel');
         const clipsTwitchChannel = interaction.options.getString('twitchchannel');

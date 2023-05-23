@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { setGuildSetting } = require('../utils/setGuildSetting');
+const botSettings = require('../botSettings.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,6 +23,10 @@ module.exports = {
                 .setDescription('Role to mention'))
         ,
     async execute(interaction) {
+        if(interaction.user.id != botSettings.botOwnerID) { // TODO - include guild owner and admins
+            await interaction.reply({content: `Command restricted to bot owner.`, ephemeral: true});
+            return;
+        }
         // console.log(interaction);
         const guildId = interaction.guild.id;
         const liveEnabled = interaction.options.getBoolean('enabled');
