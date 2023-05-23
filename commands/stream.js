@@ -49,9 +49,9 @@ module.exports = {
         }
 
         if(discordChannel !== undefined && discordChannel !== null) {
-            await setGuildSetting(guildId, 'notificationChannelId', discordChannel); 
-            await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel}`, ephemeral: true});
-            console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel}`);
+            await setGuildSetting(guildId, 'notificationChannelId', interaction.channelId); 
+            await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id})`, ephemeral: true});
+            console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
         }       
 
         if(twitchUser !== undefined && twitchUser !== null) {

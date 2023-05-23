@@ -14,7 +14,11 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         .setColor('#1EA8D7') // change this to use event color from channel info
         .setTitle(streamTitle)
         .setURL(channelUrl) // change this to get from twitchInfo 
-        .setAuthor(`${msgAuthor} is live`, twitchInfo.profile_image_url, channelUrl)
+        .setAuthor({
+            name: `${msgAuthor} is live`,
+            icon_url: twitchInfo.profile_image_url,
+            url: channelUrl
+        })
         .setDescription(streamInfo.game_name)
         .setThumbnail(twitchInfo.profile_image_url)
         .setImage(thumbnailUrl) // change this to stream preview

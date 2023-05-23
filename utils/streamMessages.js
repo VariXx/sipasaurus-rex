@@ -5,7 +5,7 @@ const streamMessagesFilePath = require('../botSettings.json').streamMessagesFile
 async function getStreamMessages() {
     // read and return json
     let returnStreamMessages = {};
-    const readFile = util.promisify(fs.readfile);
+    const readFile = util.promisify(fs.readFile);
     if(fs.existsSync(streamMessagesFilePath)) {
         try {
             const streamMessages = await readFile(streamMessagesFilePath);
@@ -19,7 +19,7 @@ async function getStreamMessages() {
     }
     else {
         // file doesn't exist - should this exit or return blank?
-        return undefined; 
+        return {}; 
     }   
 }
 
