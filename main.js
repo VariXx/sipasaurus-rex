@@ -480,8 +480,8 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     log('info', logChannel, updatedMsgLog);
                                     foundMessage = true;
                                 }
+                                await writeStreamMessages(streamMessages);
                             }
-                            await writeStreamMessages(streamMessages);
                             // for(const key in sentStreamMessages) {
                             //     // if(sentStreamMessages[key].activityId == act.id) {
                             //     // if(sentStreamMessages[key].sentMessageId == searchMessageId) {
