@@ -445,12 +445,13 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                     // const twitchEmbedMsg = await streamingEmbed(twitchUsername, newStatus.user.username);
                     let activityUsername = newStatus.userId; // TODO - change this to look up the user's name by ID
                     const twitchEmbedMsg = await streamingEmbed(twitchUsername, activityUsername);
+                    let streamMessages = await getStreamMessages();
                     if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                         if(msgChannel !== null) {
                             let foundMessage = false;
                             // let searchMessageId = `${newStatus.guild.id}-${act.id}`;
                             let searchMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
-                            let streamMessages = await getStreamMessages();
+                            // let streamMessages = await getStreamMessages();
                             for(const key in streamMessages) {
                                 if(key == searchMessageId) {
                                     let embedMsgContent = ``;
@@ -480,7 +481,6 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     log('info', logChannel, updatedMsgLog);
                                     foundMessage = true;
                                 }
-                                await writeStreamMessages(streamMessages);
                             }
                             // for(const key in sentStreamMessages) {
                             //     // if(sentStreamMessages[key].activityId == act.id) {
@@ -517,7 +517,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                         embeds: [twitchEmbedMsg],
                                         allowedMentions: {roles: [roleMention.id]}
                                     });
-                                    let streamMessages = await getStreamMessages();
+                                    // let streamMessages = await getStreamMessages();
                                     // let sentMessageId = `${newStatus.guild.id}-${act.id}`;
                                     // let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
                                     let activityId = `${newStatus.guild.id}-${newStatus.userId}`;
@@ -530,7 +530,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                         twitchUsername: twitchUsername,
                                         discordUsername: newStatus.user.username
                                     };                                
-                                    await writeStreamMessages(streamMessages);
+                                    // await writeStreamMessages(streamMessages);
                                     // let sentMessageId = `${newStatus.guild.id}-${act.id}`;
                                     // sentStreamMessages[sentMessageId] = {
                                     //     activityId: act.id,
@@ -546,7 +546,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     // let sentMessageId = `${newStatus.guild.id}-${act.id}`;
                                     // let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
                                     let activityId = `${newStatus.guild.id}-${newStatus.userId}`;
-                                    let streamMessages = getStreamMessages();
+                                    // let streamMessages = getStreamMessages();
                                     streamMessages[activityId] = {
                                         // activityId: act.id,
                                         activityId: `${newStatus.guild.id}-${newStatus.userId}`,
@@ -556,7 +556,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                         twitchUsername: twitchUsername,
                                         discordUsername: newStatus.user.username
                                     };
-                                    await writeStreamMessages(streamMessages);
+                                    // await writeStreamMessages(streamMessages);
                                 }                                                      
                                 // else {
                                 //     const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
@@ -575,6 +575,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 log('info', logChannel, addedMsgLog);
                             }
                         }
+                        await writeStreamMessages(streamMessages);
                     }                
                 }
                 catch(error) {
