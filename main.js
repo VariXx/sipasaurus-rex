@@ -523,7 +523,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     let activityId = `${newStatus.guild.id}-${newStatus.userId}`;
                                     streamMessages[activityId] = {
                                         // activityId: act.id,
-                                        activityId: `${newStatus.guild.id}-${newStatus.userId}`,
+                                        activityId: activityId,
                                         // sentMessageId: sentMessageId,
                                         guildId: newStatus.guild.id,
                                         msgId: streamingMsgId,
