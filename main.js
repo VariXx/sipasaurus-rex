@@ -519,11 +519,12 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                     });
                                     let streamMessages = await getStreamMessages();
                                     // let sentMessageId = `${newStatus.guild.id}-${act.id}`;
-                                    let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
-                                    streamMessages[sentMessageId] = {
+                                    // let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
+                                    let activityId = `${newStatus.guild.id}-${newStatus.userId}`;
+                                    streamMessages[activityId] = {
                                         // activityId: act.id,
                                         activityId: `${newStatus.guild.id}-${newStatus.userId}`,
-                                        sentMessageId: sentMessageId,
+                                        // sentMessageId: sentMessageId,
                                         guildId: newStatus.guild.id,
                                         msgId: streamingMsgId,
                                         twitchUsername: twitchUsername,
@@ -543,12 +544,13 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                                 else {
                                     const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
                                     // let sentMessageId = `${newStatus.guild.id}-${act.id}`;
-                                    let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
+                                    // let sentMessageId = `${newStatus.guild.id}-${newStatus.userId}`;
+                                    let activityId = `${newStatus.guild.id}-${newStatus.userId}`;
                                     let streamMessages = getStreamMessages();
-                                    streamMessages[sentMessageId] = {
+                                    streamMessages[activityId] = {
                                         // activityId: act.id,
                                         activityId: `${newStatus.guild.id}-${newStatus.userId}`,
-                                        sentMessageId: sentMessageId,
+                                        // sentMessageId: sentMessageId,
                                         guildId: newStatus.guild.id,
                                         msgId: streamingMsgId,
                                         twitchUsername: twitchUsername,
