@@ -40,9 +40,13 @@ async function cleanupStreamEmbeds() {
                 if(isChannelLive === undefined) { // twitch API doesn't send a message if stream is offline. this is messy. 
                     log('info', logChannel, `Stream ${streamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
                     const offlineStreamingEmbedMsg = await offlineStreamingEmbed(streamMessages[x].twitchUsername, streamMessages[x].discordUsername);
-                    streamMessages[x].msgId.edit({embeds: [offlineStreamingEmbedMsg]});
-                    log('info', logChannel, `Message changed to offline embed. Removing from list.`);
-                    delete streamMessages[x];
+                    // streamMessages[x].msgId.edit({embeds: [offlineStreamingEmbedMsg]});
+                    const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);                   
+                    const cleanupChannelManager = cleanupGuild.channels;
+                    const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
+                    cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
+                    // log('info', logChannel, `Message changed to offline embed. Removing from list.`);
+                    // delete streamMessages[x];
                 }
                 else {
                     log('info', logChannel, `Channel ${streamMessages[x].twitchUsername} is still live. Moving to next object in list.`);
@@ -113,7 +117,7 @@ client.once('ready', async () => {
     if(botSettings.logChannel.length > 1) {
         logChannel = client.channels.resolve(botSettings.logChannel);    
         console.log(`Found log channel ${logChannel}`);
-        await logChannel.send(`:robot: Bot started`);
+        await logChannel.send(`${botSettings.botIcon} Bot started`);
         let twitchCheck = await twitchTokenHeartbeat();
         if(twitchCheck) { await logChannel.send(`:ballot_box_with_check: Twitch connected`); }
     }
@@ -133,7 +137,8 @@ client.once('ready', async () => {
     streamMessages = await getStreamMessages();    
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
-    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
+    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
 });
 
 async function twitchTokenHeartbeat() {
