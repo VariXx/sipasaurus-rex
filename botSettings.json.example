@@ -2,6 +2,7 @@
     "discordToken": "",
     "discordClientId": "",
     "activity": "I am error",
+    "botIcon": ":t_rex:",    
     "notificationChannelId": "",
     "roleToPing": "none",
     "twitchClientId": "",
