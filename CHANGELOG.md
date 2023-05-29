@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed bot activity message for discord.js v13/v14
+- Offline embedded message uses generic thumbnail and link when archives are unavailable
 
 ## [0.9.0] - 2023-03-01
 ### Added
