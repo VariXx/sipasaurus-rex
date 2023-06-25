@@ -41,12 +41,13 @@ async function cleanupStreamEmbeds() {
                     log('info', logChannel, `Stream ${streamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
                     const offlineStreamingEmbedMsg = await offlineStreamingEmbed(streamMessages[x].twitchUsername, streamMessages[x].discordUsername);
                     
-                    const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);                   
+                    const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
                     const cleanupChannelManager = cleanupGuild.channels;
                     const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
+                    // const testCleanupMsg = await cleanupMsgChannel.messages.fetch(streamMessages[x].msgId.id); // fetching the message fails goes to catch, good enough
                     cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
-                    log('info', logChannel, `Message changed to offline embed. Removing from list.`);
-                    delete streamMessages[x];
+                    log('info', logChannel, `Message changed to offline embed. Removing from list.`);                    
+                    delete streamMessages[x];                    
                 }
                 else {
                     log('info', logChannel, `Channel ${streamMessages[x].twitchUsername} is still live. Moving to next object in list.`);
@@ -139,8 +140,8 @@ client.once('ready', async () => {
     streamMessages = await getStreamMessages();    
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
-    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 15 minutes (15*60000)
-    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
+    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 5 minutes (15*60000)
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
 });
 
 async function twitchTokenHeartbeat() {
@@ -421,7 +422,7 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                         return; 
                     }
                 }
-                console.log(newStatus);
+                // console.log(newStatus);
                 // send or update embed
                 let twitchUsername = act.url.replace('https://www.twitch.tv/', '');
                 try { 
@@ -430,7 +431,8 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
                     }
                     const actChannelManager = newStatus.guild.channels;
                     const msgChannel = actChannelManager.resolve(guildSettings.notificationChannelId);
-                    let activityUsername = newStatus.userId; // TODO - change this to look up the user's name by ID
+                    // let activityUsername = newStatus.userId; // TODO - change this to look up the user's name by ID
+                    let activityUsername = newStatus.user.username; // TODO - change this to look up the user's name by ID
                     const twitchEmbedMsg = await streamingEmbed(twitchUsername, activityUsername);
                     if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                         if(msgChannel !== null) {
