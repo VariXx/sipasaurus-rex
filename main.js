@@ -40,23 +40,21 @@ async function cleanupStreamEmbeds() {
                 if(isChannelLive === undefined) { // twitch API doesn't send a message if stream is offline. this is messy. 
                     log('info', logChannel, `Stream ${streamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
                     const offlineStreamingEmbedMsg = await offlineStreamingEmbed(streamMessages[x].twitchUsername, streamMessages[x].discordUsername);
-                    
-                    const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
-                    const cleanupChannelManager = cleanupGuild.channels;
-                    const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
-                    // const testCleanupMsg = await cleanupMsgChannel.messages.fetch(streamMessages[x].msgId.id); // fetching the message fails goes to catch, good enough
-                    cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
-                    log('info', logChannel, `Message changed to offline embed. Removing from list.`);                    
-                    delete streamMessages[x];                    
+                    try {
+                        const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
+                        const cleanupGuildChannelId = client.channels.resolveId(streamMessages[x].msgId.channelId); // not needed. prevents crash if the channel is deleted. 
+                        const cleanupChannelManager = cleanupGuild.channels;
+                        const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
+                        const cleanupMsgId = await cleanupMsgChannel.fetch(streamMessages[x].msgId.id); // not needed. prevents crash if the message is deleted.                         
+                        await cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
+                    }
+                    catch(error) { log('error', logChannel, `Error cleaning up streaming message. ${error}`); }
+                    delete streamMessages[x];
                 }
-                else {
-                    log('info', logChannel, `Channel ${streamMessages[x].twitchUsername} is still live. Moving to next object in list.`);
-                }
+                else { log('info', logChannel, `Channel ${streamMessages[x].twitchUsername} is still live. Moving to next object in list.`); }
             }
         }
-        catch(error) {
-            console.log(error);
-        }
+        catch(error) { console.log(error); }
     }   
     await writeStreamMessages(streamMessages);
     streamMessages = await getStreamMessages();
