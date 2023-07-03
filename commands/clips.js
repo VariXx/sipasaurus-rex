@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { setGuildSetting } = require('../utils/setGuildSetting');
 const botSettings = require('../botSettings.json');
 
@@ -15,6 +15,7 @@ module.exports = {
         .addStringOption(option => 
             option.setName('twitchchannel')
                 .setDescription('Twitch channel to monitor for new clips'))
+        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         ,
     async execute(interaction) {
         if(interaction.user.id != botSettings.botOwnerID) { // TODO - include guild owner and admins
