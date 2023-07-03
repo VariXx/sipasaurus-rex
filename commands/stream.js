@@ -49,7 +49,7 @@ module.exports = {
         }
 
         if(discordChannel !== undefined && discordChannel !== null) {
-            await setGuildSetting(guildId, 'notificationChannelId', interaction.channelId); 
+            await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
             await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id})`, ephemeral: true});
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
         }       
