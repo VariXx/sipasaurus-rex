@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { setGuildSetting } = require('../utils/setGuildSetting');
 const botSettings = require('../botSettings.json');
 
