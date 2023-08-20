@@ -15,10 +15,10 @@ module.exports = {
         .addStringOption(option => 
             option.setName('twitchchannel')
                 .setDescription('Twitch channel to monitor for new clips'))
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+        .setDefaultMemberPermissions(PermissionFlagsBits.MANAGE_GUILD)
         ,
     async execute(interaction) {
-        if(interaction.user.id != botSettings.botOwnerID) { // TODO - include guild owner and admins
+        if(interaction.user.id != interaction.guild.ownerId || interaction.user.id != botSettings.botOwnerID) {
             await interaction.reply({content: `Command restricted to bot owner.`, ephemeral: true});
             return;
         }        
