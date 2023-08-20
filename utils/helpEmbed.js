@@ -1,45 +1,36 @@
 const { EmbedBuilder } = require('discord.js');
+const version = require('../package.json').version;
 
 async function helpEmbed(requestedBy){
     try {
         const helpEmbed = new EmbedBuilder()
         .setColor('#ffff00')
         // .setTitle('Help')
-        .setDescription('Command list')
+        .setDescription('Help')
         .addFields([
-            // { name: 'help',value: 'Displays this message.'},
-            // { name: 'invite', value: 'Send URL to add me to your Discord server.'},
-            // // { name: '\u200B', value: '\u200B' },
-            // // { name: 'Stream Notifications', value: '-'},
-            // { name: '**set live channel #<channel>**', value: 'Sets the channel to send notifications when users go live on twitch.'},
-            // { name: '**set live role @<role>/off**', value: 'Role to mention in stream notification messages.\n**off** disables role mentions in stream notification messages.'},
-            // { name: '**set live user @<user>/all/off**', value: 'The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.\n**all** will send a notification for all users.\n**off** disables steam notification messages.'},
-            // // { name: '\u200B', value: '\u200B' },
-            // // { name: 'Clips', value: '-'},
-            // { name: '**set clips channel**', value: 'Discord channel to send notification messages when a new clip is created on twitch.'},
-            // { name: '**set clips user**', value: 'Twitch channel name to watch for new clips.'},
-            // { name: '**set clips off**', value: 'Disable twitch clip notification messages.'}
-            { name: 'Coming soon', value: 'maybe'}
-        ]);
-
+            { name: 'invite', value: 'Invite URL to send this bot to your Discord server.'},
+            // clips
+            { name: '\u200B', value: '\u200B' },
+            { name: 'clips', value: '\u200B'},
+            { name: 'enabled <true/false>', value: 'Enable/disable messsages when a new Twitch clip is created'},
+            { name: 'channel <#discord-channel-name>', value: 'Discord channel for clips'},
+            { name: 'twitchchannel <twitch channel name>', value: 'Twitch channel to monitor for clips'},
+            // twitch
+            { name: '\u200B', value: '\u200B' },
+            { name: 'twitch', value: '\u200B'},
+            { name: 'enabled <true/false>', value: 'Enable/disable messages when channels go live on Twitch'},
+            { name: 'discordchannel <#discord-channel-name>', value: 'Discord channel for live notificaions'},
+            { name: 'user <@user>', value: 'Discord user (mention them) to monitor for Twitch live notifications'},
+            { name: 'mention <true/false>', value: 'Enable/disable mentioning a role in live notifications'},
+            { name: 'role <@role>', value: 'Role to mention in live notifications'}       
+        ])
+        .setTimestamp()
+        .setFooter({ text: `Sipasaurus Rex v${version}`});
         return helpEmbed;
     }
     catch(error) {
         console.log(`Error creating help embed: ${error})`);
     }
-
 }
 
 module.exports.helpEmbed = helpEmbed;
-// **Stream Notifications**
-// **set live channel #<channel>**: Sets the channel to send notifications when users go live on twitch.
-// **set live role @<role>**: Role to mention in stream notification messages.
-// **set live role off**: Disable role mentions in stream notification messages.
-// **set live user @<user>**: The discord user to watch for streaming activity. This user will need to have twitch linked with their discord account.
-// **set live user all**: Send stream notification messages for all users in this server. 
-// **set live user off**: Disable stream notification messages.
-
-// **Clips**
-// **set clips channel**: Discord channel to send notification messages when a new clip is created on twitch. 
-// **set clips user**: Twitch channel name to watch for new clips. 
-// **set clips off**: Disable twitch clip notification messages.
