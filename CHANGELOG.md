@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- _No unreleased changes_ -->
 
-## [1.0.0] - 2023-03-03
+## [0.10.0] - 2023-08-20
 ### Added
 - Added slash commands
 - Added startup message in log channel

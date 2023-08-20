@@ -127,8 +127,7 @@ client.once('ready', async () => {
             // clipsChecker = setInterval(checkTwitchClips,clipsCheckTime);
         // }
         // else { console.log(`Twitch clips channel not set, skipping lookup`); }    
-    }
-    else { console.log(`checkTwitchClips not enabled, skipping.`); }    
+    }    
     streamMessages = await getStreamMessages();    
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
@@ -403,14 +402,15 @@ client.on('presenceUpdate', async (oldStatus, newStatus) => {
             // msgChannel.send(listenString);
         // }
         if(act.name == 'Twitch') { // check if this is twitch or anoter service
-            console.log(`New twitch activity\n${act}`);
+            // console.log(`New twitch activity\n${act}`);
             // console.log(newStatus);
             try {
                 const guildSettings = await getAllGuildSettings(newStatus.guild.id);
                 if(guildSettings.watchedUserId !== 'all') { // if watchedUser is not set to all 
                     if(newStatus.userId !== guildSettings.watchedUserId) { // check if it's the watched user id
-                        console.log(`Activity did not come from watched user`);
-                        log('info', logChannel, `Activity did not come from watched user`);
+                        // console.log(newStatus);
+                        // console.log(`Activity did not come from watched user`);
+                        // log('info', logChannel, `Activity did not come from watched user`); // TODO - uncomment before release
                         return; 
                     }
                 }
