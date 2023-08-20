@@ -38,7 +38,8 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 		const data = await rest.put(
 			// Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), // use for test guild
             Routes.applicationCommands(botSettings.discordClientId), // use for all guilds
-			{ body: commands },
+			// { body: commands },
+			{ body: commands.map(c => c.toJSON()) },
 		);
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
