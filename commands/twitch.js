@@ -4,7 +4,7 @@ const botSettings = require('../botSettings.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('stream')
+        .setName('twitch')
         .setDescription('change stream notification settings')
         .addBooleanOption(option =>
             option.setName('enabled')
