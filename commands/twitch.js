@@ -82,15 +82,22 @@ module.exports = {
                             twitchStreamsList.push(twitchStream);
                             let returnMsg = `${twitchStream} added to list`;
                             console.log(returnMsg);
-                            await interaction.reply({ content: returnMsg, ephemeral: true});                        
+                            const streamNotificationChannel = await getGuildSetting(guildId,'notificationChannelId');
+                            if(streamNotificationChannel) {
+                                await interaction.reply({ content: returnMsg, ephemeral: true});     
+                            }
+                            else {
+                                await interaction.reply({ content: `${returnMsg} \nHint: Use /twitch discordchannel to set a channel for live notifications.`, ephemeral: true});     
+                            }
                         }
                     }
                     else { 
                         console.log(`twitchStreams does not exist in guild settings for ${guildId}`);
                         twitchStreamsList = [twitchStream];
+                        await interaction.reply({ content: `${twitchStream} added to list \nHint: Use /twitch discordchannel to set a channel for live notifications.`, ephemeral: true});                                                                           
                     }
                     await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
-                    console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);                                                
+                    console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);
                 }
                 else { 
                     let returnMsg = `${twitchStream} is not a valid twitch user`;
