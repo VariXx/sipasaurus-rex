@@ -145,12 +145,11 @@ async function checkStreams() {
                     }         
                     else {
                         // stream is offline 
-                        console.log(`${guildSettings.twitchStreams[i]} is not streaming. Calling embed cleanup.`);
-                        await cleanupStreamEmbeds();
+                        console.log(`${guildSettings.twitchStreams[i]} is not streaming.`);
                     }
                 }                                    
             }
-            else { console.log(`twitchStreams or notificationChannelId not set in guild. Skipping`); }
+            else { console.log(`twitchStreams or notificationChannelId not set in guild ${g}. Skipping`); }
         });            
     }
     catch(error) {
@@ -233,12 +232,17 @@ client.once('ready', async () => {
         // else { console.log(`Twitch clips channel not set, skipping lookup`); }    
     }    
     streamMessages = await getStreamMessages();    
-    checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
+    
+    // timers
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
-    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 5 minutes (15*60000)
-    checkStreamsTimer = setInterval(checkStreams,1*10000); // 10 seconds (1*10000)
-    // checkStreamsTimer = setInterval(checkStreams,15*60000); // 5 minutes (15*60000) 
+    checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
+    
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,15*60000); // 5 minutes (15*60000)
+    
+    // checkStreamsTimer = setInterval(checkStreams,1*10000); // 10 seconds (1*10000)
+    checkStreamsTimer = setInterval(checkStreams,15*60000); // 5 minutes (15*60000) 
+    
 });
 
 async function twitchTokenHeartbeat() {
