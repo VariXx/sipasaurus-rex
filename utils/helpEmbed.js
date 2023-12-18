@@ -19,8 +19,8 @@ async function helpEmbed(requestedBy){
             { name: '\u200B', value: '\u200B' },
             { name: 'twitch', value: '\u200B'},
             { name: 'enabled <true/false>', value: 'Enable/disable messages when channels go live on Twitch'},
+            { name: 'add/remove <twitch username>', value: 'Add/remove channels to list. Useranme only. Do not use the full URL.'},
             { name: 'discordchannel <#discord-channel-name>', value: 'Discord channel for live notificaions'},
-            { name: 'user <@user>', value: 'Discord user (mention them) to monitor for Twitch live notifications'},
             { name: 'mention <true/false>', value: 'Enable/disable mentioning a role in live notifications'},
             { name: 'role <@role>', value: 'Role to mention in live notifications'}       
         ])
