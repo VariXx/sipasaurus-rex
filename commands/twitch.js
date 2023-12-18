@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { setGuildSetting } = require('../utils/setGuildSetting');
+const { getGuildSetting } = require('../utils/getGuildSettings');
+const { getTwitchUserInfo } = require('../utils/twitchApi');
 const botSettings = require('../botSettings.json');
 
 module.exports = {
@@ -12,12 +14,15 @@ module.exports = {
         .addChannelOption(option =>
             option.setName('discordchannel')
                 .setDescription('Discord channel to send stream notifications'))
+        // .addStringOption(option =>
+        //     option.setName('user')
+        //         .setDescription('Discord user to monitor for twitch live notifications. Use "all" for all users.'))
         .addStringOption(option =>
-            option.setName('user')
-                .setDescription('Discord user to monitor for twitch live notifications. Use "all" for all users.'))
+            option.setName('add')
+                .setDescription('Add Twitch stream to watch list for live notifications.'))                
         .addStringOption(option =>
-            option.setName('stream')
-                .setDescription('Twitch stream to watch for live notifications.'))                
+            option.setName('remove')
+                .setDescription('Add Twitch stream to watch list for live notifications.'))                
         .addBooleanOption(option =>
             option.setName('mention')
                 .setDescription('Enable or disable mentioning role in live notifications'))
@@ -35,8 +40,9 @@ module.exports = {
         const guildId = interaction.guild.id;
         const liveEnabled = interaction.options.getBoolean('enabled');
         const discordChannel = interaction.options.getChannel('discordchannel');
-        const twitchUser = interaction.options.getString('user');
-        const twitchStream = interaction.options.getString('stream');
+        // const twitchUser = interaction.options.getString('user');
+        const twitchStream = interaction.options.getString('add');
+        const removeTwitchStream = interaction.options.getString('remove');
         const mentionEnabled = interaction.options.getBoolean('mention');
         const mentionRole = interaction.options.getRole('role');
 
@@ -59,32 +65,77 @@ module.exports = {
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
         }       
 
-        if(twitchUser !== undefined && twitchUser !== null) {
-            if(twitchUser == "all") {
-                await setGuildSetting(guildId, 'watchedUserId', 'all');
-                await interaction.reply({ content: `Set twitch live notifications for all users`, ephemeral: true});
-                console.log(`Set stream notifications for guild ${guildId} for all users`);
-            }
-            else {
-                await setGuildSetting(guildId, 'watchedUserId', twitchUser);
-                await interaction.reply({ content: `Set twitch live notifications for ${twitchUser}`, ephemeral: true});
-                console.log(`Set stream notifications for guild ${guildId} for ${twitchUser}`);                
-            }   
-        }
-
-        if(twitchStream !== undefined && twitchStream !== null) { // TODO - truthy? 
-            if(twitchStream.length > 1) {
-                // TODO - get existing arry from guild setting and add value
-                let twitchStreamsList = [twitchStream];
-                await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
-                console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);
+        if(twitchStream) { 
+            if(twitchStream.length > 4) {
+                // check if it's a valid twitch user 
+                const twitchUserCheck = await getTwitchUserInfo(twitchStream);
+                if(twitchUserCheck) {
+                    // get existing arry from guild setting and add value
+                    let twitchStreamsList = await getGuildSetting(guildId, 'twitchStreams');
+                    if(twitchStreamsList) {
+                        if(twitchStreamsList.includes(twitchStream)) {
+                            let returnMsg = `${twitchStream} already exists in streams list`;
+                            console.log(returnMsg);
+                            await interaction.reply({ content: returnMsg, ephemeral: true});
+                        }
+                        else {
+                            twitchStreamsList.push(twitchStream);
+                            let returnMsg = `${twitchStream} added to list`;
+                            console.log(returnMsg);
+                            await interaction.reply({ content: returnMsg, ephemeral: true});                        
+                        }
+                    }
+                    else { 
+                        console.log(`twitchStreams does not exist in guild settings for ${guildId}`);
+                        twitchStreamsList = [twitchStream];
+                    }
+                    await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
+                    console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);                                                
+                }
+                else { 
+                    let returnMsg = `${twitchStream} is not a valid twitch user`;
+                    console.log(returnMsg);
+                    await interaction.reply({ content: returnMsg, ephemeral: true});
+                }                                        
             }
             else { 
-                console.log(`twitchStream less than 1 character?`); 
+                let returnMsg = 'twitch username must be at least 5 characters';
+                console.log(returnMsg);
+                await interaction.reply({ content: returnMsg, ephemeral: true});                
             }
         }
 
-        if(mentionEnabled !== undefined && mentionEnabled !== null) {
+        if(removeTwitchStream) {
+            if(removeTwitchStream.length > 4) {            
+                // get existing arry from guild setting and add value
+                let twitchStreamsList = await getGuildSetting(guildId, 'twitchStreams');
+                if(twitchStreamsList) {
+                    if(twitchStreamsList.includes(removeTwitchStream)) {
+                        // remove from array
+                        const index = twitchStreamsList.indexOf(removeTwitchStream);
+                        twitchStreamsList.splice(index, 1);
+
+                        let returnMsg = `${removeTwitchStream} removed from list`;
+                        console.log(returnMsg);
+                        await interaction.reply({ content: returnMsg, ephemeral: true});
+                        await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
+                        console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);                                                                                    
+                    }
+                    else {            
+                        let returnMsg = `${removeTwitchStream} is not in list`;
+                        console.log(returnMsg);
+                        await interaction.reply({ content: returnMsg, ephemeral: true}); 
+                    }
+                }
+            }
+            else { 
+                let returnMsg = 'twitch username must be at least 5 characters';
+                console.log(returnMsg);
+                await interaction.reply({ content: returnMsg, ephemeral: true});                
+            }
+        }
+
+        if(mentionEnabled !== undefined && mentionEnabled !== null) { // TODO - clean these up truthy 
             if(!mentionEnabled) {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
                 await interaction.reply({ content: `Disbaled role mentions for stream notifications`, ephemeral: true});
