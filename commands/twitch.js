@@ -8,21 +8,15 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('twitch')
         .setDescription('change stream notification settings')
-        .addBooleanOption(option =>
-            option.setName('enabled')
-                .setDescription('enable stream notifications'))
         .addChannelOption(option =>
             option.setName('discordchannel')
                 .setDescription('Discord channel to send stream notifications'))
-        // .addStringOption(option =>
-        //     option.setName('user')
-        //         .setDescription('Discord user to monitor for twitch live notifications. Use "all" for all users.'))
         .addStringOption(option =>
             option.setName('add')
                 .setDescription('Add Twitch stream to watch list for live notifications.'))                
         .addStringOption(option =>
             option.setName('remove')
-                .setDescription('Add Twitch stream to watch list for live notifications.'))                
+                .setDescription('Remove Twitch stream to watch list for live notifications.'))                
         .addBooleanOption(option =>
             option.setName('mention')
                 .setDescription('Enable or disable mentioning role in live notifications'))
@@ -38,28 +32,13 @@ module.exports = {
         }
         // console.log(interaction);
         const guildId = interaction.guild.id;
-        const liveEnabled = interaction.options.getBoolean('enabled');
         const discordChannel = interaction.options.getChannel('discordchannel');
-        // const twitchUser = interaction.options.getString('user');
         const twitchStream = interaction.options.getString('add');
         const removeTwitchStream = interaction.options.getString('remove');
         const mentionEnabled = interaction.options.getBoolean('mention');
         const mentionRole = interaction.options.getRole('role');
 
-        if(liveEnabled !== undefined && liveEnabled !== null) {
-            if(liveEnabled) {
-                await setGuildSetting(guildId, 'checkTwitchClips', true);
-                await interaction.reply({ content: `Enabled stream notifications.`, ephemeral: true});
-                console.log(`Enabled stream notifcations for guild ${guildId}`);
-            }
-            else {
-                await setGuildSetting(guildId, 'checkTwitchClips', false);
-                await interaction.reply({ content: `Disbaled stream notifications. Now I'm bored.`, ephemeral: true});
-                console.log(`Disbaled stream notifcations for guild ${guildId}`);
-            }
-        }
-
-        if(discordChannel !== undefined && discordChannel !== null) {
+        if(discordChannel) {
             await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
             await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id})`, ephemeral: true});
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
@@ -142,7 +121,8 @@ module.exports = {
             }
         }
 
-        if(mentionEnabled !== undefined && mentionEnabled !== null) { // TODO - clean these up truthy 
+        if(mentionEnabled) { 
+            // TODO - this doesn't unset if set to false
             if(!mentionEnabled) {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
                 await interaction.reply({ content: `Disbaled role mentions for stream notifications`, ephemeral: true});
@@ -153,8 +133,8 @@ module.exports = {
             }
         }
 
-        if(mentionRole !== undefined && mentionRole !== null) {
-            await setGuildSetting(guildId, 'roleToPing', mentionRole);
+        if(mentionRole) {
+            await setGuildSetting(guildId, 'roleToPing', mentionRole.id);
             await interaction.reply({ content: `Set ${mentionRole} to live notifications mention role`, ephemeral: true});
             console.log(`Set ${mentionRole} to live notifications mention role for guild ${guildId}`);
         }
