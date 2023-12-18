@@ -28,9 +28,9 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 		.catch(console.error);		
 
 		// all guilds
-		// rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
-		// 	.then(() => console.log('Successfully deleted all application commands.'))
-		// 	.catch(console.error);		
+		rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
+			.then(() => console.log('Successfully deleted all application commands.'))
+			.catch(console.error);		
 
 		// register commands
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
