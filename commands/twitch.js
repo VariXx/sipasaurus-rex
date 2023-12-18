@@ -15,6 +15,9 @@ module.exports = {
         .addStringOption(option =>
             option.setName('user')
                 .setDescription('Discord user to monitor for twitch live notifications. Use "all" for all users.'))
+        .addStringOption(option =>
+            option.setName('stream')
+                .setDescription('Twitch stream to watch for live notifications.'))                
         .addBooleanOption(option =>
             option.setName('mention')
                 .setDescription('Enable or disable mentioning role in live notifications'))
@@ -33,6 +36,7 @@ module.exports = {
         const liveEnabled = interaction.options.getBoolean('enabled');
         const discordChannel = interaction.options.getChannel('discordchannel');
         const twitchUser = interaction.options.getString('user');
+        const twitchStream = interaction.options.getString('stream');
         const mentionEnabled = interaction.options.getBoolean('mention');
         const mentionRole = interaction.options.getRole('role');
 
@@ -66,6 +70,18 @@ module.exports = {
                 await interaction.reply({ content: `Set twitch live notifications for ${twitchUser}`, ephemeral: true});
                 console.log(`Set stream notifications for guild ${guildId} for ${twitchUser}`);                
             }   
+        }
+
+        if(twitchStream !== undefined && twitchStream !== null) { // TODO - truthy? 
+            if(twitchStream.length > 1) {
+                // TODO - get existing arry from guild setting and add value
+                let twitchStreamsList = [twitchStream];
+                await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
+                console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);
+            }
+            else { 
+                console.log(`twitchStream less than 1 character?`); 
+            }
         }
 
         if(mentionEnabled !== undefined && mentionEnabled !== null) {
