@@ -23,12 +23,12 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 	try {
 		// remove commands
 		// per guild
-		const removeCommands = await rest.put(Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), { body: [] })
-		.then(() => console.log('Successfully deleted all guild commands.'))
-		.catch(console.error);		
+		// const removeCommands = await rest.put(Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), { body: [] })
+		// .then(() => console.log('Successfully deleted all guild commands.'))
+		// .catch(console.error);		
 
 		// all guilds
-		rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
+		await rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
 			.then(() => console.log('Successfully deleted all application commands.'))
 			.catch(console.error);		
 
