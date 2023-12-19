@@ -18,7 +18,7 @@ module.exports = {
             option.setName('remove')
                 .setDescription('Remove Twitch stream to watch list for live notifications.'))                
         .addBooleanOption(option =>
-            option.setName('mention')
+            option.setName('mentions')
                 .setDescription('Enable or disable mentioning role in live notifications'))
         .addRoleOption(option =>
             option.setName('role')
@@ -35,7 +35,7 @@ module.exports = {
         const discordChannel = interaction.options.getChannel('discordchannel');
         const twitchStream = interaction.options.getString('add');
         const removeTwitchStream = interaction.options.getString('remove');
-        const mentionEnabled = interaction.options.getBoolean('mention');
+        const mentionEnabled = interaction.options.getBoolean('mentions');
         const mentionRole = interaction.options.getRole('role');
 
         if(discordChannel) {
@@ -121,15 +121,17 @@ module.exports = {
             }
         }
 
-        if(mentionEnabled) { 
+        if(mentionEnabled !== undefined && mentionEnabled !== null) { 
             // TODO - this doesn't unset if set to false
-            if(!mentionEnabled) {
-                await setGuildSetting(guildId, 'roleToPing', 'none');
-                await interaction.reply({ content: `Disbaled role mentions for stream notifications`, ephemeral: true});
-                console.log(`Disbaled role mentions for stream notifications for guild ${guildId}`);
+            if(mentionEnabled) { // this doesn't actually do anything. setting a role enables the mentions. 
+                // await setGuildSetting(guildId, 'roleToPing');
+                // console.log(`Enabled mentions for guild ${guildId}.`);
+                await interaction.reply({ content: `Hint: use /twitch role <@role> to set a role`, ephemeral: true});
             }
             else {
-                await interaction.reply({ content: `Please set a role to enable role mentions`, ephemeral: true});
+                await setGuildSetting(guildId, 'roleToPing', 'none');
+                console.log(`Disabled mentions for guild ${guildId}.`);
+                await interaction.reply({ content: 'Disabled role mentions', ephemeral: true});
             }
         }
 
