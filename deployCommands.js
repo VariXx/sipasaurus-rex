@@ -37,7 +37,7 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
 			// Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), // use for test guild
-            Routes.applicationCommands(botSettings.discordClientId), // use for all guilds
+            Routes.applicationCommands(botSettings.discordClientId), // use for all guilds - this can take up to an hour to update everywhere
 			{ body: commands },
 		);
 
