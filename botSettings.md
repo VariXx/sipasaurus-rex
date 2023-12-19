@@ -20,8 +20,8 @@ Twitch client ID. This is used to pull stream information used in the message.
 ## twitchToken
 Twitch token. This is used to pull stream information used in the message.
 
-## watchedUserId (optional)
-User to watch. Set to "all" if you want the bot to send messages for all users. 
+<!-- ## watchedUserId (optional)
+User to watch. Set to "all" if you want the bot to send messages for all users.  -->
 
 ## logChannel 
 Channel ID used for sending log messages
