@@ -7,7 +7,7 @@ const botSettings = require('../botSettings.json');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('twitch')
-        .setDescription('change stream notification settings')
+        .setDescription('change twitch stream notification settings')
         .addChannelOption(option =>
             option.setName('discordchannel')
                 .setDescription('Discord channel to send stream notifications'))

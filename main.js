@@ -351,7 +351,7 @@ client.once('ready', async () => {
         let twitchCheck = await twitchTokenHeartbeat();
         if(twitchCheck) { await logChannel.send(`:ballot_box_with_check: Twitch connected`); }
         // vStreamEnabled = true; // comment this out if the token refresh below is enabled
-        let vStreamTokenRefresh = checkVStreamToken(); // comment this out when testing so it's not hammering vstream's API on startups 
+        let vStreamTokenRefresh = await checkVStreamToken(); // comment this out when testing so it's not hammering vstream's API on startups 
         if(vStreamTokenRefresh) { await logChannel.send(`:ballot_box_with_check: vStream connected`); } // comment this out when testing so it's not hammering vstream's API on startups 
     }
     else { console.log(`Log channel not set, skipping lookup`); }    
