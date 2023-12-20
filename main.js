@@ -10,6 +10,7 @@ const { log } = require('./utils/log');
 const version = require('./package.json').version;
 const { getClipList, addClip } = require('./utils/clipList');
 const { getTwichClips, getStreamInfo } = require('./utils/twitchApi');
+const { getVStreamStreamInfo } = require('./utils/vStreamAPI');
 const { checkTwitchConnection } = require('./utils/checkTwitchConnection');
 
 // const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences]});
@@ -58,12 +59,12 @@ async function cleanupStreamEmbeds() {
 
 async function checkStreams() {
     try {
-        // twitch
         client.guilds.cache.forEach(async(g) => {
             const guildSettings = await getAllGuildSettings(g.id);
+            // twitch
             if(guildSettings.twitchStreams !== undefined && guildSettings.notificationChannelId !== undefined) { // TODO - change to truthy?
                 for(let i = 0; i < guildSettings.twitchStreams.length; i++) {
-                    console.log(`Checking stream ${guildSettings.twitchStreams[i]}`);
+                    console.log(`Checking twitch stream ${guildSettings.twitchStreams[i]}`);
                     const twitchStreamOnline = await getStreamInfo(guildSettings.twitchStreams[i]);
                     if(twitchStreamOnline !== undefined) {
                         try { 
@@ -75,7 +76,7 @@ async function checkStreams() {
                             let activityUsername = guildSettings.twitchStreams[i]; // TODO - remove this now that it's not using activity 
                             const twitchEmbedMsg = await streamingEmbed(guildSettings.twitchStreams[i], activityUsername);
                             if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
-                                if(msgChannel !== null) {
+                                if(msgChannel !== null) { // TODO - make this a function to use with other services
                                     let foundMessage = false;
                                     let searchMessageId = `${g.id}-${guildSettings.twitchStreams[i]}`;
                                     for(const key in streamMessages) {
@@ -150,11 +151,36 @@ async function checkStreams() {
                 }                                    
             }
             else { console.log(`twitchStreams or notificationChannelId not set in guild ${g}. Skipping`); }
+            // // vStream
+            // if(guildSettings.vStreamStreams !== undefined && guildSettings.notificationChannelId !== undefined) {
+            //     for(let i = 0; i < guildSettings.vStreamStreams.length; i++) {
+            //         console.log(`Checking vStream stream ${guildSettings.vStreamStreams[i]}`);
+            //         const vStreamStreamOnline = await getVStreamStreamInfo(guildSettings.vStreamStreams[i]);
+            //         if(vStreamStreamOnline) {
+            //             try {
+            //                 console.log(`${guildSettings.vStreamStreams[i]} is streaming. Create stream embed message.`);
+            //             }
+            //             catch(error) {
+            //                 console.log(error);
+            //             }
+            //         }
+            //         else { console.log(`${guildSettings.vStreamStreams[i]} is not streaming.`); }
+            //     }
+            // }
+            // else { console.log(`vStreamStreams or notificationChannelId not set in guild ${g}. Skipping`); }
         });            
     }
     catch(error) {
         console.log(error);
     }    
+    
+    try { 
+        // vStream 
+
+    }
+    catch(error) {
+        console.log(error);
+    }
 }
 
 async function checkTwitchClips() {
@@ -240,8 +266,8 @@ client.once('ready', async () => {
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
     
-    // checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
-    checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
+    checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
+    // checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
     
 });
 
