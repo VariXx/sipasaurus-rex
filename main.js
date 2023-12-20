@@ -29,32 +29,97 @@ var checkStreamsTimer;
 var streamMessages = {};
 
 async function cleanupStreamEmbeds() {
+    // TODO - change this to support all platforms. use the update function? add stream platform to json
     streamMessages = await getStreamMessages();
     for(let x in streamMessages) {
         try {
-            if(streamMessages[x].twitchUsername !== undefined) {
-                const isChannelLive = await getStreamInfo(streamMessages[x].twitchUsername);
-                if(isChannelLive === undefined) { // twitch API doesn't send a message if stream is offline. this is messy. 
-                    log('info', logChannel, `Stream ${streamMessages[x].twitchUsername} is offline. Changing message to offline embed.`);            
-                    const offlineStreamingEmbedMsg = await offlineStreamingEmbed(streamMessages[x].twitchUsername, streamMessages[x].discordUsername);
-                    try {
-                        const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
-                        const cleanupGuildChannelId = client.channels.resolveId(streamMessages[x].msgId.channelId); // not needed. prevents crash if the channel is deleted. 
-                        const cleanupChannelManager = cleanupGuild.channels;
-                        const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
-                        const cleanupMsgId = await cleanupMsgChannel.fetch(streamMessages[x].msgId.id); // not needed. prevents crash if the message is deleted.                         
-                        await cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
+            if(streamMessages[x].streamUsername !== undefined) {
+                if(streamMessages[x].streamPlatform === 'twitch') {
+                    const isChannelLive = await getStreamInfo(streamMessages[x].streamUsername);
+                    if(isChannelLive === undefined) { // twitch API doesn't send a message if stream is offline. this is messy. 
+                        log('info', logChannel, `Stream ${streamMessages[x].streamUsername} is offline. Changing message to offline embed.`);            
+                        const offlineStreamingEmbedMsg = await offlineStreamingEmbed(streamMessages[x].streamUsername, streamMessages[x].discordUsername);
+                        try {
+                            const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
+                            const cleanupGuildChannelId = client.channels.resolveId(streamMessages[x].msgId.channelId); // not needed. prevents crash if the channel is deleted. 
+                            const cleanupChannelManager = cleanupGuild.channels;
+                            const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
+                            const cleanupMsgId = await cleanupMsgChannel.fetch(streamMessages[x].msgId.id); // not needed. prevents crash if the message is deleted.                         
+                            await cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
+                        }
+                        catch(error) { log('error', logChannel, `Error cleaning up streaming message. ${error}`); }
+                        delete streamMessages[x];
                     }
-                    catch(error) { log('error', logChannel, `Error cleaning up streaming message. ${error}`); }
-                    delete streamMessages[x];
+                    else { log('info', logChannel, `Channel ${streamMessages[x].streamUsername} is still live. Moving to next object in list.`); }
                 }
-                else { log('info', logChannel, `Channel ${streamMessages[x].twitchUsername} is still live. Moving to next object in list.`); }
             }
         }
         catch(error) { console.log(error); }
     }   
     await writeStreamMessages(streamMessages);
     streamMessages = await getStreamMessages();
+}
+
+async function updateStreamEmbeds(streamUsername,guildSettings,guildId,msgChannel,streamEmbedMsg,streamPlatform) { // TODO - rename this function 
+    let foundMessage = false;
+    let searchMessageId = `${guildId}-${streamUsername}-${streamPlatform}`; // TODO - use this for activity ID below
+    for(const key in streamMessages) {
+        if(key == searchMessageId) {
+            let embedMsgContent = ``;
+            let roleMention = ``;
+            if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
+                roleMention = await g.roles.fetch(guildSettings.roleToPing);
+                embedMsgContent = `${roleMention}`;
+                msgChannel.messages.edit(streamMessages[key].msgId.id, {
+                    content: `${roleMention}`,
+                    embeds: [streamEmbedMsg],
+                    allowedMentions: {roles: [roleMention.id]}
+                });                                    
+            }
+            else { msgChannel.messages.edit(streamMessages[key].msgId.id, {embeds: [streamEmbedMsg]}); }                                
+            let updatedMsgLog = `Updated activity (${guildId}-${streamUsername}-${streamPlatform}) message`;
+            console.log(updatedMsgLog);
+            log('info', logChannel, updatedMsgLog);
+            foundMessage = true;
+        }
+    }
+    if(!foundMessage){
+        let embedMsgContent = ``;
+        let roleMention = ``;
+        if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
+            roleMention = await g.roles.fetch(guildSettings.roleToPing);
+            embedMsgContent = `${roleMention}`;
+            const streamingMsgId = await msgChannel.send({
+                content: `${roleMention}`,
+                embeds: [streamEmbedMsg],
+                allowedMentions: {roles: [roleMention.id]}
+            });
+            let activityId = `${guildId}-${streamUsername}-${streamPlatform}`;
+            streamMessages[activityId] = {
+                activityId: activityId,
+                guildId: guildId,
+                msgId: streamingMsgId,
+                streamUsername: streamUsername,
+                discordUsername: streamUsername,
+                streamPlatform: streamPlatform
+            };                                
+        }
+        else {
+            const streamingMsgId = await msgChannel.send({embeds: [streamEmbedMsg]});
+            let activityId = `${guildId}-${streamUsername}-${streamPlatform}`; // TODO - set this to a variable and add date to id? 
+            streamMessages[activityId] = {
+                activityId: activityId,
+                guildId: guildId,
+                msgId: streamingMsgId,
+                streamUsername: streamUsername,
+                discordUsername: streamUsername,
+                streamPlatform: streamPlatform
+            };
+        }                                                                                                 
+        let addedMsgLog = `Added activity (${guildId}-${streamUsername}-${streamPlatform}) message to list`;
+        console.log(addedMsgLog);
+        log('info', logChannel, addedMsgLog);        
+    }
 }
 
 async function checkStreams() {
@@ -77,63 +142,64 @@ async function checkStreams() {
                             const twitchEmbedMsg = await streamingEmbed(guildSettings.twitchStreams[i], activityUsername);
                             if(twitchEmbedMsg !== undefined && msgChannel !== undefined) {
                                 if(msgChannel !== null) { // TODO - make this a function to use with other services
-                                    let foundMessage = false;
-                                    let searchMessageId = `${g.id}-${guildSettings.twitchStreams[i]}`;
-                                    for(const key in streamMessages) {
-                                        if(key == searchMessageId) {
-                                            let embedMsgContent = ``;
-                                            let roleMention = ``;
-                                            if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
-                                                roleMention = await g.roles.fetch(guildSettings.roleToPing);
-                                                embedMsgContent = `${roleMention}`;
-                                                msgChannel.messages.edit(streamMessages[key].msgId.id, {
-                                                    content: `${roleMention}`,
-                                                    embeds: [twitchEmbedMsg],
-                                                    allowedMentions: {roles: [roleMention.id]}
-                                                });                                    
-                                            }
-                                            else { msgChannel.messages.edit(streamMessages[key].msgId.id, {embeds: [twitchEmbedMsg]}); }                                
-                                            let updatedMsgLog = `Updated activity (${g.id}-${guildSettings.twitchStreams[i]}) message`;
-                                            console.log(updatedMsgLog);
-                                            log('info', logChannel, updatedMsgLog);
-                                            foundMessage = true;
-                                        }
-                                    }
-                                    if(!foundMessage){
-                                        let embedMsgContent = ``;
-                                        let roleMention = ``;
-                                        if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
-                                            roleMention = await g.roles.fetch(guildSettings.roleToPing);
-                                            embedMsgContent = `${roleMention}`;
-                                            const streamingMsgId = await msgChannel.send({
-                                                content: `${roleMention}`,
-                                                embeds: [twitchEmbedMsg],
-                                                allowedMentions: {roles: [roleMention.id]}
-                                            });
-                                            let activityId = `${g.id}-${guildSettings.twitchStreams[i]}`;
-                                            streamMessages[activityId] = {
-                                                activityId: activityId,
-                                                guildId: g.id,
-                                                msgId: streamingMsgId,
-                                                twitchUsername: guildSettings.twitchStreams[i],
-                                                discordUsername: activityUsername
-                                            };                                
-                                        }
-                                        else {
-                                            const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
-                                            let activityId = `${g.id}-${guildSettings.twitchStreams[i]}`; // TODO - set this to a variable and add date to id? 
-                                            streamMessages[activityId] = {
-                                                activityId: activityId,
-                                                guildId: g.id,
-                                                msgId: streamingMsgId,
-                                                twitchUsername: guildSettings.twitchStreams[i],
-                                                discordUsername: activityUsername
-                                            };
-                                        }                                                                                                 
-                                        let addedMsgLog = `Added activity (${g.id}-${guildSettings.twitchStreams[i]}) message to list`;
-                                        console.log(addedMsgLog);
-                                        log('info', logChannel, addedMsgLog);        
-                                    }
+                                    // let foundMessage = false;
+                                    // let searchMessageId = `${g.id}-${guildSettings.twitchStreams[i]}`;
+                                    // for(const key in streamMessages) {
+                                    //     if(key == searchMessageId) {
+                                    //         let embedMsgContent = ``;
+                                    //         let roleMention = ``;
+                                    //         if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
+                                    //             roleMention = await g.roles.fetch(guildSettings.roleToPing);
+                                    //             embedMsgContent = `${roleMention}`;
+                                    //             msgChannel.messages.edit(streamMessages[key].msgId.id, {
+                                    //                 content: `${roleMention}`,
+                                    //                 embeds: [twitchEmbedMsg],
+                                    //                 allowedMentions: {roles: [roleMention.id]}
+                                    //             });                                    
+                                    //         }
+                                    //         else { msgChannel.messages.edit(streamMessages[key].msgId.id, {embeds: [twitchEmbedMsg]}); }                                
+                                    //         let updatedMsgLog = `Updated activity (${g.id}-${guildSettings.twitchStreams[i]}) message`;
+                                    //         console.log(updatedMsgLog);
+                                    //         log('info', logChannel, updatedMsgLog);
+                                    //         foundMessage = true;
+                                    //     }
+                                    // }
+                                    // if(!foundMessage){
+                                    //     let embedMsgContent = ``;
+                                    //     let roleMention = ``;
+                                    //     if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
+                                    //         roleMention = await g.roles.fetch(guildSettings.roleToPing);
+                                    //         embedMsgContent = `${roleMention}`;
+                                    //         const streamingMsgId = await msgChannel.send({
+                                    //             content: `${roleMention}`,
+                                    //             embeds: [twitchEmbedMsg],
+                                    //             allowedMentions: {roles: [roleMention.id]}
+                                    //         });
+                                    //         let activityId = `${g.id}-${guildSettings.twitchStreams[i]}`;
+                                    //         streamMessages[activityId] = {
+                                    //             activityId: activityId,
+                                    //             guildId: g.id,
+                                    //             msgId: streamingMsgId,
+                                    //             twitchUsername: guildSettings.twitchStreams[i],
+                                    //             discordUsername: activityUsername
+                                    //         };                                
+                                    //     }
+                                    //     else {
+                                    //         const streamingMsgId = await msgChannel.send({embeds: [twitchEmbedMsg]});
+                                    //         let activityId = `${g.id}-${guildSettings.twitchStreams[i]}`; // TODO - set this to a variable and add date to id? 
+                                    //         streamMessages[activityId] = {
+                                    //             activityId: activityId,
+                                    //             guildId: g.id,
+                                    //             msgId: streamingMsgId,
+                                    //             twitchUsername: guildSettings.twitchStreams[i],
+                                    //             discordUsername: activityUsername
+                                    //         };
+                                    //     }                                                                                                 
+                                    //     let addedMsgLog = `Added activity (${g.id}-${guildSettings.twitchStreams[i]}) message to list`;
+                                    //     console.log(addedMsgLog);
+                                    //     log('info', logChannel, addedMsgLog);        
+                                    // }
+                                    await updateStreamEmbeds(guildSettings.twitchStreams[i],guildSettings,g.id,msgChannel,twitchEmbedMsg,'twitch');
                                 }
                                 await writeStreamMessages(streamMessages);
                                 streamMessages = await getStreamMessages();                              
@@ -263,8 +329,9 @@ client.once('ready', async () => {
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     
-    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*30000); // 30 seconds
-    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
+    cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
+    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*60000); // 60 seconds
+    // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
     
     checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
     // checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
