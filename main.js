@@ -3,6 +3,7 @@ const path = require('node:path');
 const { Client, GatewayIntentBits, Events, Collection, ActivityType } = require('discord.js');
 const botSettings = require('./botSettings.json');
 const { streamingEmbed, offlineStreamingEmbed } = require('./utils/streamingEmbed');
+const { vStreamStreamEmbedMsg, vStreamOfflineEmbedMsg } = require('./utils/vStreamStreamingEmbed');
 const { getGuildSetting, getAllGuildSettings } = require('./utils/getGuildSettings');
 const { setGuildSetting } = require('./utils/setGuildSetting');
 const { getStreamMessages, writeStreamMessages } = require('./utils/streamMessages');
@@ -24,6 +25,7 @@ var twitchEnabled = false;
 var vStreamEnabled = false;
 
 var cleanupStreamEmbedsTimer;
+var refreshVStreamTokenTimer;
 var logChannel = null;
 var clipsCheckTime = 60*60000; // default to 1 hour
 var clipsChecker; 
@@ -57,6 +59,28 @@ async function cleanupStreamEmbeds() {
                         else { log('info', logChannel, `Channel ${streamMessages[x].streamUsername} is still live. Moving to next object in list.`); }
                     }
                     else { console.log('twitch disabled. Skipping.'); }
+                }
+                if(streamMessages[x].streamPlatform === 'vStream') {
+                    // TODO - this assumes the token is valid which is a bad fucking idea ¯\_(ツ)_/¯
+                    if(vStreamEnabled) {
+                        const isChannelLive = await getVStreamStreamInfo(streamMessages[x].streamUsername);              
+                        if(isChannelLive === null) { // this does not work like twitch
+                            log('info', logChannel, `Stream ${streamMessages[x].streamUsername} is offline. Changing message to offline embed.`);            
+                            const offlineStreamingEmbedMsg = await vStreamOfflineEmbedMsg(streamMessages[x].streamUsername);
+                            try {
+                                const cleanupGuild = client.guilds.resolve(streamMessages[x].guildId);
+                                const cleanupGuildChannelId = client.channels.resolveId(streamMessages[x].msgId.channelId); // not needed. prevents crash if the channel is deleted. 
+                                const cleanupChannelManager = cleanupGuild.channels;
+                                const cleanupMsgChannel = cleanupChannelManager.resolve(streamMessages[x].msgId.channelId);
+                                const cleanupMsgId = await cleanupMsgChannel.fetch(streamMessages[x].msgId.id); // not needed. prevents crash if the message is deleted.                         
+                                await cleanupMsgChannel.messages.edit(streamMessages[x].msgId.id, {embeds: [offlineStreamingEmbedMsg]});
+                            }
+                            catch(error) { log('error', logChannel, `Error cleaning up streaming message. ${error}`); }
+                            delete streamMessages[x];
+                        }
+                        else { log('info', logChannel, `Channel ${streamMessages[x].streamUsername} is still live. Moving to next object in list.`); }                    
+                    }
+                    else { console.log('vStream disabled. Skipping'); }
                 }
             }
         }
@@ -136,7 +160,7 @@ async function checkStreams() {
             if(guildSettings.twitchStreams !== undefined && guildSettings.notificationChannelId !== undefined) { // TODO - change to truthy?
                 for(let i = 0; i < guildSettings.twitchStreams.length; i++) {
                     if(twitchEnabled) { 
-                        console.log(`Checking twitch stream ${guildSettings.twitchStreams[i]}`);
+                        console.log(`[twitch]Checking stream ${guildSettings.twitchStreams[i]}`);
                         const twitchStreamOnline = await getStreamInfo(guildSettings.twitchStreams[i]);
                         if(twitchStreamOnline !== undefined) {
                             try { 
@@ -219,7 +243,7 @@ async function checkStreams() {
                         }         
                         else {
                             // stream is offline 
-                            console.log(`${guildSettings.twitchStreams[i]} is not streaming.`);
+                            console.log(`[twitch]${guildSettings.twitchStreams[i]} is not streaming.`);
                         }
                     }
                     else { console.log('Twitch disabled. Skipping'); }
@@ -227,39 +251,42 @@ async function checkStreams() {
             }
             else { console.log(`twitchStreams or notificationChannelId not set in guild ${g}. Skipping`); }
             // // vStream
-            // if(guildSettings.vStreamStreams !== undefined && guildSettings.notificationChannelId !== undefined) {
-            //     for(let i = 0; i < guildSettings.vStreamStreams.length; i++) {
-            //         console.log(`Checking vStream stream ${guildSettings.vStreamStreams[i]}`);
-            //         const vStreamStreamOnline = await getVStreamStreamInfo(guildSettings.vStreamStreams[i]);
-            //         if(vStreamStreamOnline) {
-            //             try {
-            //                 console.log(`${guildSettings.vStreamStreams[i]} is streaming. Create stream embed message.`);
-            //             }
-            //             catch(error) {
-            //                 console.log(error);
-            //             }
-            //         }
-            //         else { console.log(`${guildSettings.vStreamStreams[i]} is not streaming.`); }
-            //     }
-            // }
-            // else { console.log(`vStreamStreams or notificationChannelId not set in guild ${g}. Skipping`); }
+            if(vStreamEnabled) {
+                if(guildSettings.vStreamStreams !== undefined && guildSettings.notificationChannelId !== undefined) {
+                    for(let i = 0; i < guildSettings.vStreamStreams.length; i++) {
+                        console.log(`[vstream]Checking stream ${guildSettings.vStreamStreams[i]}`);
+                        const vStreamStreamOnline = await getVStreamStreamInfo(guildSettings.vStreamStreams[i]);
+                        if(vStreamStreamOnline) {
+                            try {
+                                const actChannelManager = g.channels;
+                                const msgChannel = actChannelManager.resolve(guildSettings.notificationChannelId);
+                                let activityUsername = guildSettings.vStreamStreams[i]; // TODO - remove this now that it's not using activity 
+                                const vStreamEmbedMsg = await vStreamStreamEmbedMsg(guildSettings.vStreamStreams[i], activityUsername);
+                                if(vStreamEmbedMsg !== undefined && msgChannel !== undefined) {
+                                    if(msgChannel !== null) {
+                                        await updateStreamEmbeds(guildSettings.vStreamStreams[i],guildSettings,g.id,msgChannel,vStreamEmbedMsg,'vStream');                                        
+                                    }
+                                    await writeStreamMessages(streamMessages);
+                                    streamMessages = await getStreamMessages();                                             
+                                }
+
+                            }
+                            catch(error) {
+                                console.log(`Error creating streaming embed message: ${error}`);
+                                log('error', logChannel, `Error creating streaming embed message: ${error}`);
+                            } 
+                        }
+                        else { console.log(`[vstream]${guildSettings.vStreamStreams[i]} is not streaming.`); }
+                    }
+                }
+                else { console.log(`vStreamStreams or notificationChannelId not set in guild ${g}. Skipping`); }
+            }
+            else { console.log('vStream disabled. Skipping.'); }
         });            
     }
     catch(error) {
         console.log(error);
     }    
-    
-    try { 
-        // vStream 
-        if(vStreamEnabled) {
-
-        }
-        else { console.log('vStream disabled. Skipping.'); }
-
-    }
-    catch(error) {
-        console.log(error);
-    }
 }
 
 async function checkTwitchClips() {
@@ -323,8 +350,9 @@ client.once('ready', async () => {
         await logChannel.send(startMsg);
         let twitchCheck = await twitchTokenHeartbeat();
         if(twitchCheck) { await logChannel.send(`:ballot_box_with_check: Twitch connected`); }
-        let vStreamTokenRefresh = checkVStreamToken();
-        if(vStreamTokenRefresh) { await logChannel.send(`:ballot_box_with_check: vStream connected`); }
+        // vStreamEnabled = true; // comment this out if the token refresh below is enabled
+        let vStreamTokenRefresh = checkVStreamToken(); // comment this out when testing so it's not hammering vstream's API on startups 
+        if(vStreamTokenRefresh) { await logChannel.send(`:ballot_box_with_check: vStream connected`); } // comment this out when testing so it's not hammering vstream's API on startups 
     }
     else { console.log(`Log channel not set, skipping lookup`); }    
     if(botSettings.checkTwitchClips) {
@@ -344,7 +372,7 @@ client.once('ready', async () => {
     // checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,15000); // 15 seconds
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     
-    refreshVStreamToken = setInterval(twitchTokenHeartbeat,45*60000); // 45 minutes
+    refreshVStreamTokenTimer = setInterval(twitchTokenHeartbeat,45*60000); // 45 minutes
     // refreshVStreamTokenTimer = setInterval(checkVStreamToken,1*60000); // 60 seconds
     
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
@@ -361,7 +389,7 @@ async function checkVStreamToken() {
     if(getVStreamRefreshToken) {
         vStreamEnabled = true;
         let expiryTimestamp = new Date(getVStreamRefreshToken.expiresAt).toString();
-        await log('info', logChannel, `vStream token refresh successful. (Expires ${expiryTimestamp})`);
+        await log('info', logChannel, `:stopwatch: vStream token refresh successful. (Expires ${expiryTimestamp})`);
         // TODO - reload token settings?
         return true;
     }

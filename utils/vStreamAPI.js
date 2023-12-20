@@ -2,20 +2,22 @@ const fetch = require('node-fetch');
 const fs = require('node:fs');
 // const { vStreamToken } = require('../botSettings.json');
 const { vStreamClientId, vStreamClientSecret } = require('../botSettings.json');
-const { vStreamAccessToken, vStreamRefreshToken } = require('../vStreamTokens.json');
+const { accessToken, vStreamRefreshToken } = require('../vStreamTokens.json');
 
 async function vStreamAPI(url) {
     try {
         const response = await fetch(url, {
         headers: {
-            Authorization: `Bearer ${vStreamToken}`,
+            Authorization: `Bearer ${accessToken}`,
         },
         });
+        // console.log(response);
         let result = await response.json();
         if(result) { return result.data; }
         else { console.log(`vStream API error`); }
     }
     catch(error) { console.log(error); }
+
 }
 
 async function getVStreamChannelId(username) {
@@ -70,7 +72,7 @@ async function getRefreshToken(clientId,clientSecret,refreshToken) {
     // return response;
 
     if(response.error) {
-        console.log(`Error refreshing vStream token: ${response1.error_description}`);
+        console.log(`Error refreshing vStream token: ${response.error_description}`);
         console.log(response);
         return false;
     }
@@ -88,10 +90,10 @@ async function refreshVStreamToken() {
     // console.log(vStreamClientSecret);
     // console.log(vStreamRefreshToken);
 
+    const result = await getRefreshToken(vStreamClientId,vStreamClientSecret,vStreamRefreshToken);
     if(result.accessToken !== undefined) {
         try { fs.writeFileSync('../vStreamTokens.json', JSON.stringify(result)); }
         catch(error) { console.log(`Error writing vStream token file: ${error}`); }    
-        console.log(result);
         return result;
     }
     else {
@@ -99,11 +101,28 @@ async function refreshVStreamToken() {
     }
 }
 
-// ( async () => {
-//     const streamInfo = await getVStreamStreamInfo('quietusvt');
-//     console.log(streamInfo);
-// })();
+async function getVStreamProfileImage(username) {
+    const channelId = await getVStreamChannelId(username);
+    let imageUrl = `https://images.vstream.com/channels/${channelId}.png`;
+    return imageUrl;
+}
+
+async function getVStreamBannerImage(username) {
+    const channelId = await getVStreamChannelId(username);
+    let imageUrl = `https://images.vstream.com/channels/${channelId}/banner.png`;
+    return imageUrl;
+}
+
+( async () => {
+    // const result = await getVStreamChannelInfo('varixx');
+    // const result = await getVStreamChannelId('quietusvt');
+    // console.log(result);
+    // const refresh = await refreshVStreamToken();
+    // console.log(refresh);
+})();
 
 module.exports.getVStreamChannelInfo = getVStreamChannelInfo;
 module.exports.getVStreamStreamInfo = getVStreamStreamInfo;
 module.exports.refreshVStreamToken = refreshVStreamToken;
+module.exports.getVStreamProfileImage = getVStreamProfileImage;
+module.exports.getVStreamBannerImage = getVStreamBannerImage;
