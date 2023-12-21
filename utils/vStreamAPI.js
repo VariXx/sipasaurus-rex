@@ -115,13 +115,13 @@ async function getVStreamBannerImage(username) {
     return imageUrl;
 }
 
-( async () => {
+// ( async () => {
     // const result = await getVStreamChannelInfo('varixx');
     // const result = await getVStreamChannelId('quietusvt');
     // console.log(result);
     // const refresh = await refreshVStreamToken();
     // console.log(refresh);
-})();
+// })();
 
 module.exports.getVStreamChannelInfo = getVStreamChannelInfo;
 module.exports.getVStreamStreamInfo = getVStreamStreamInfo;
