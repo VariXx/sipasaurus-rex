@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const fs = require('node:fs');
 // const { vStreamToken } = require('../botSettings.json');
 const { vStreamClientId, vStreamClientSecret } = require('../botSettings.json');
-const { accessToken, vStreamRefreshToken } = require('../vStreamTokens.json');
+const { accessToken, refreshToken } = require('../vStreamTokens.json');
 
 async function vStreamAPI(url) {
     try {
@@ -88,9 +88,11 @@ async function getRefreshToken(clientId,clientSecret,refreshToken) {
 async function refreshVStreamToken() {
     // console.log(vStreamClientId);
     // console.log(vStreamClientSecret);
-    // console.log(vStreamRefreshToken);
+    // console.log(refreshToken);
 
-    const result = await getRefreshToken(vStreamClientId,vStreamClientSecret,vStreamRefreshToken);
+    const result = await getRefreshToken(vStreamClientId,vStreamClientSecret,refreshToken);
+    // console.log(result);
+    
     if(result.accessToken !== undefined) {
         try { fs.writeFileSync('../vStreamTokens.json', JSON.stringify(result)); }
         catch(error) { console.log(`Error writing vStream token file: ${error}`); }    
