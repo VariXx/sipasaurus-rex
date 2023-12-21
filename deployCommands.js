@@ -23,21 +23,21 @@ const rest = new REST({ version: '10' }).setToken(botSettings.discordToken);
 	try {
 		// remove commands
 		// per guild
-		const removeCommands = await rest.put(Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), { body: [] })
-		.then(() => console.log('Successfully deleted all guild commands.'))
-		.catch(console.error);		
+		// const removeCommands = await rest.put(Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), { body: [] })
+		// .then(() => console.log('Successfully deleted all guild commands.'))
+		// .catch(console.error);		
 
 		// all guilds
-		// await rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
-		// 	.then(() => console.log('Successfully deleted all application commands.'))
-		// 	.catch(console.error);		
+		await rest.put(Routes.applicationCommands(botSettings.discordClientId), { body: [] })
+			.then(() => console.log('Successfully deleted all application commands.'))
+			.catch(console.error);		
 
 		// register commands
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), // use for test guild
-            // Routes.applicationCommands(botSettings.discordClientId), // use for all guilds - this can take up to an hour to update everywhere
+			// Routes.applicationGuildCommands(botSettings.discordClientId, botSettings.testGuildId), // use for test guild
+            Routes.applicationCommands(botSettings.discordClientId), // use for all guilds - this can take up to an hour to update everywhere
 			{ body: commands },
 		);
 
