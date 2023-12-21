@@ -18,41 +18,50 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.MANAGE_GUILD)
         ,
     async execute(interaction) {
-        if(interaction.user.id != interaction.guild.ownerId || interaction.user.id != botSettings.botOwnerID) {
-            await interaction.reply({content: `Command restricted to bot owner.`, ephemeral: true});
-            return;
-        }        
+        if(interaction.user.id != interaction.guild.ownerId) {
+            if(interaction.user.id != botSettings.botOwnerID) {
+                await interaction.reply({content: `Command restricted to guild or bot owner.`, ephemeral: true});
+                return;
+            }
+        }
+
         const clipsEnabled = interaction.options.getBoolean('enabled');
         const clipsDiscordChannel = interaction.options.getChannel('channel');
         const clipsTwitchChannel = interaction.options.getString('twitchchannel');
         const guildId = interaction.guildId;
 
+        let replyMsg = ' ';
+
         if(clipsEnabled !== undefined && clipsEnabled !== null) {
             if(clipsEnabled) {
                 await setGuildSetting(guildId, 'checkTwitchClips', true);
-                await interaction.reply({ content: `Clip messages enabled`, ephemeral: true});
+                // await interaction.reply({ content: `Clip messages enabled`, ephemeral: true});
+                replyMsg += `Clip messages enabled\n`;
                 console.log(`Enabled clips for guild ${guildId}`);
             }
             else {
                 await setGuildSetting(guildId, 'checkTwitchClips', false);
-                await interaction.reply({ content: `Clip messages disabled`, ephemeral: true});
+                // await interaction.reply({ content: `Clip messages disabled`, ephemeral: true});
+                replyMsg += `Clip messages disabled\n`;
                 console.log(`Disbaled clips for guild ${guildId}`);
             }
         }
-        if(clipsDiscordChannel !== undefined && clipsDiscordChannel !== null) {
+        if(clipsDiscordChannel) {
             // enable clips setting for guild
             await setGuildSetting(guildId, 'checkTwitchClips', true);            
             // set clips message channel
             await setGuildSetting(guildId, 'discordClipsChannel', interaction.channelId);
-            interaction.reply({ content: `Set clips channel to ${clipsDiscordChannel}`, ephemeral: true});
+            // interaction.reply({ content: `Set clips channel to ${clipsDiscordChannel}`, ephemeral: true});
+            replyMsg += `Set clips channel to ${clipsDiscordChannel}\n`;
             console.log(`Set clips channel for guild ${guildId} to ${clipsDiscordChannel}`);
-            clipsDiscordChannel.send("I'll start posting clips in this channel.");
+            // clipsDiscordChannel.send("I'll start posting clips in this channel.");
         }
-        if(clipsTwitchChannel !== undefined && clipsTwitchChannel !== null) {
-            
+        if(clipsTwitchChannel) {
             await setGuildSetting(guildId, 'twitchClipsChannel', clipsTwitchChannel);
             console.log(`Set clips user for guild ${guildId} to ${clipsTwitchChannel}`);
-            await interaction.reply({ content: `Set twitch channel to https://twitch.tv/${clipsTwitchChannel}`, ephemeral: true});
+            // await interaction.reply({ content: `Set twitch channel to https://twitch.tv/${clipsTwitchChannel}`, ephemeral: true});
+            replyMsg += `Set twitch channel to https://twitch.tv/${clipsTwitchChannel}\n`;
         }
+        await interaction.reply({ content: replyMsg, ephemeral: true});
     },
 };
