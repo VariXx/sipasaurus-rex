@@ -26,9 +26,11 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.MANAGE_GUILD)
         ,
     async execute(interaction) {
-        if(interaction.user.id != interaction.guild.ownerId || interaction.user.id != botSettings.botOwnerID) {
-            await interaction.reply({content: `Command restricted to bot owner.`, ephemeral: true});
-            return;
+        if(interaction.user.id != interaction.guild.ownerId) {
+            if(interaction.user.id != botSettings.botOwnerID) {
+                await interaction.reply({content: `Command restricted to guild or bot owner.`, ephemeral: true});
+                return;
+            }
         }
         // console.log(interaction);
         const guildId = interaction.guild.id;
@@ -37,6 +39,8 @@ module.exports = {
         const removeTwitchStream = interaction.options.getString('remove');
         const mentionEnabled = interaction.options.getBoolean('mentions');
         const mentionRole = interaction.options.getRole('role');
+
+// TODO - multiple settings at once throws an error. reply at the end of all if statements. 
 
         if(discordChannel) {
             await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
