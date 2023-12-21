@@ -71,7 +71,7 @@ async function vStreamOfflineEmbedMsg(vStreamUsername) {
             url: channelUrl
         })
         .setDescription(`${channelInfo.displayName} is offline`)
-        .setThumbnail(channelBanner)
+        .setThumbnail(channelImage)
         .setImage(vodThumbnail)
         .setTimestamp();
         // .setFooter(`Last updated`);
