@@ -156,6 +156,7 @@ async function checkStreams() {
     try {
         client.guilds.cache.forEach(async(g) => {
             const guildSettings = await getAllGuildSettings(g.id);
+            console.log(`Checking streams for guild ${g.id}`);
             // twitch
             if(guildSettings.twitchStreams !== undefined && guildSettings.notificationChannelId !== undefined) { // TODO - change to truthy?
                 for(let i = 0; i < guildSettings.twitchStreams.length; i++) {
@@ -373,12 +374,13 @@ client.once('ready', async () => {
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     
     // refreshVStreamTokenTimer = setInterval(checkVStreamToken,1*60000); // 60 seconds
-    refreshVStreamTokenTimer = setInterval(twitchTokenHeartbeat,30*60000); // 30 minutes    
+    refreshVStreamTokenTimer = setInterval(twitchTokenHeartbeat,15*60000); // 15 minutes    
     
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
     
     // checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
+    // checkStreamsTimer = setInterval(checkStreams,1*60000); // 1 minute
     checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
     
 });

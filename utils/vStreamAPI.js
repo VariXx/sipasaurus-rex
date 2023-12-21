@@ -1,10 +1,9 @@
 const fetch = require('node-fetch');
 const fs = require('node:fs');
-// const { vStreamToken } = require('../botSettings.json');
 const { vStreamClientId, vStreamClientSecret } = require('../botSettings.json');
-const { accessToken, refreshToken } = require('../vStreamTokens.json');
 
 async function vStreamAPI(url) {
+    const { accessToken } = require('../vStreamTokens.json');
     try {
         const response = await fetch(url, {
         headers: {
@@ -58,8 +57,10 @@ async function getVStreamVideoInfo(videoId) {
     return result;
 }
 
-async function getRefreshToken(clientId,clientSecret,refreshToken) {
+async function getRefreshToken(clientId,clientSecret) {
     // copypasta from vstream's docs    
+    let oldRefreshToken = require('../vStreamTokens.json').refreshToken;
+    console.log(`Old refresh token before refresh ${oldRefreshToken}`);
     const auth = `Basic ${Buffer.from([clientId, clientSecret].join(":")).toString("base64")}`;
     const response = await fetch("https://api.vstream.com/oidc/token", {
       method: "POST",
@@ -69,7 +70,7 @@ async function getRefreshToken(clientId,clientSecret,refreshToken) {
       },
       body: new URLSearchParams({
         grant_type: "refresh_token",
-        refresh_token: refreshToken,
+        refresh_token: oldRefreshToken,
       }),
     }).then((res) => res.json());
     
@@ -82,10 +83,11 @@ async function getRefreshToken(clientId,clientSecret,refreshToken) {
         return false;
     }
     else {    
+        console.log(response);
         const accessToken = response.access_token;
-        const newRefreshToken = response.refresh_token;
+        const refreshToken = response.refresh_token;
         const expiresAt = Date.now() + response.expires_in * 1000;
-        
+        console.log(`Refresh token after refresh ${refreshToken}`);
         return { accessToken, refreshToken, expiresAt };
     }
   }
@@ -94,8 +96,7 @@ async function refreshVStreamToken() {
     // console.log(vStreamClientId);
     // console.log(vStreamClientSecret);
     // console.log(refreshToken);
-
-    const result = await getRefreshToken(vStreamClientId,vStreamClientSecret,refreshToken);
+    const result = await getRefreshToken(vStreamClientId,vStreamClientSecret);
     // console.log(result);
     
     if(result.accessToken !== undefined) {
