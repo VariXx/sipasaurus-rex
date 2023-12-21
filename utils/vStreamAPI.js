@@ -21,9 +21,14 @@ async function vStreamAPI(url) {
 }
 
 async function getVStreamChannelId(username) {
-    let url = `https://api.vstream.com/channels/lookup?username=${username}`;
-    const result = await vStreamAPI(url);
-    return result.id;
+    try {
+        let url = `https://api.vstream.com/channels/lookup?username=${username}`;
+        const result = await vStreamAPI(url);
+        return result.id;
+    }
+    catch(error) {
+        console.log(`vStream API error ${error}`);
+    }
 }
 
 async function getVStreamChannelInfo(username) {
