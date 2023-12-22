@@ -134,7 +134,7 @@ async function refreshVStreamToken() {
     }
 }
 
-async function getVStreamProfileImage(username) {
+async function getVStreamProfileImage(username) { // reference only no longer used
     const channelId = await getVStreamChannelId(username);
     let imageUrl = `https://images.vstream.com/channels/${channelId}.png`;
     return imageUrl;
@@ -146,16 +146,49 @@ async function getVStreamBannerImage(username) {
     return imageUrl;
 }
 
+async function getVStreamStreamThumbnail(username) {  // reference only no longer used
+    // const channelId = await getVStreamChannelId(username);
+    try {
+        const streamVideoId = await getVStreamStreamInfo(username);
+        let imageUrl = await getVStreamVideoThumbnail(streamVideoId.id);
+        return imageUrl;
+    }
+    catch(error) {
+        console.log(`Error getting stream thumbnail: ${error}`);
+        return null;
+    }
+}
+
+async function getVStreamVideoThumbnail(videoId) {
+    let imageUrl = `https://images.vstream.com/videos/${videoId}.png`;
+    return imageUrl;
+}
+
 // ( async () => {
-    // const result = await getVStreamChannelInfo('varixx');
-    // const result = await getVStreamChannelId('quietusvt');
-    // console.log(result);
-    // const refresh = await refreshVStreamToken();
-    // console.log(refresh);
+//     const result = await getVStreamChannelInfo('varixx');
+//     const result = await getVStreamChannelId('quietusvt');
+//     console.log(result);
+//     const refresh = await refreshVStreamToken();
+//     console.log(refresh);
+    // const streamInfo = await getVStreamStreamInfo('pastelmonstaa');
+    // const videos = await getVStreamVideos('pastelmonstaa');
+    // console.log(streamInfo);
+    // for(let i in videos[0]) {
+    //     if(streamInfo.id === i.id) {
+    //         console.log(`stream and video ID match`);
+    //         console.log(i);
+    //     }
+    // }
+    // console.log('---');
+    // const streamVideoInfo = await getVStreamVideoInfo(streamInfo.id);
+    // console.log(streamVideoInfo);
+    // console.log(videos);
+    // console.log(videos);
 // })();
 
 module.exports.getVStreamChannelInfo = getVStreamChannelInfo;
 module.exports.getVStreamStreamInfo = getVStreamStreamInfo;
 module.exports.refreshVStreamToken = refreshVStreamToken;
-module.exports.getVStreamProfileImage = getVStreamProfileImage;
+// module.exports.getVStreamProfileImage = getVStreamProfileImage;
 module.exports.getVStreamBannerImage = getVStreamBannerImage;
+// module.exports.getVStreamStreamThumbnail = getVStreamStreamThumbnail;

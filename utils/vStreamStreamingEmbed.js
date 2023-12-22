@@ -7,9 +7,13 @@ async function vStreamStreamEmbedMsg(vStreamUsername) {
         const channelInfo = await vStreamAPI.getVStreamChannelInfo(vStreamUsername);
         const streamInfo = await vStreamAPI.getVStreamStreamInfo(vStreamUsername);
         // console.log(streamInfo);
-        const channelImage = await vStreamAPI.getVStreamProfileImage(vStreamUsername);
+        // const channelImage = await vStreamAPI.getVStreamProfileImage(vStreamUsername);
+        const channelImage = `https://images.vstream.com/channels/${channelInfo.id}.png`;
         let channelBanner = await vStreamAPI.getVStreamBannerImage(vStreamUsername);
-        if(channelBanner.status === 'MISSING_BANNER') { channelBanner = channelImage } 
+        if(channelBanner.status === 'MISSING_BANNER') { channelBanner = channelImage; } 
+        let streamThumbnail = `https://images.vstream.com/videos/${streamInfo.id}.png`;
+        // let streamThumbnail = await vStreamAPI.getVStreamStreamThumbnail(vStreamUsername);
+        // if(streamThumbnail === null) { streamThumbnail = channelBanner; }
         let urlTimestamp = Date.now();
         // const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg?${urlTimestamp}`);
         let streamTitle = escapeMarkdown(streamInfo.title);
@@ -28,7 +32,7 @@ async function vStreamStreamEmbedMsg(vStreamUsername) {
         })
         .setDescription(streamDescription)
         .setThumbnail(channelImage)
-        .setImage(channelBanner) // change this to stream preview
+        .setImage(streamThumbnail) // change this to stream preview
         .setTimestamp();
         // .setFooter(`Last updated`);
     
@@ -44,7 +48,7 @@ async function vStreamOfflineEmbedMsg(vStreamUsername) {
     try {
         const channelInfo = await vStreamAPI.getVStreamChannelInfo(vStreamUsername);        
         let channelUrl = `https://vstream.com/c/@${vStreamUsername}`;
-        const channelImage = await vStreamAPI.getVStreamProfileImage(vStreamUsername);
+        const channelImage = `https://images.vstream.com/channels/${channelInfo.id}.png`;
         let channelBanner = await vStreamAPI.getVStreamBannerImage(vStreamUsername);
         if(channelBanner.status === 'MISSING_BANNER') { channelBanner = channelImage } 
 
