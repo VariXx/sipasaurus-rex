@@ -374,7 +374,7 @@ client.once('ready', async () => {
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     
     // refreshVStreamTokenTimer = setInterval(checkVStreamToken,1*60000); // 60 seconds
-    refreshVStreamTokenTimer = setInterval(twitchTokenHeartbeat,15*60000); // 15 minutes    
+    refreshVStreamTokenTimer = setInterval(checkVStreamToken,45*60000); // 45 minutes    
     
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
