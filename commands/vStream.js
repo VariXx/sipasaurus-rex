@@ -66,7 +66,7 @@ module.exports = {
                         }
                         else {
                             vStreamStreamsList.push(vStreamStream);
-                            let returnMsg = `:white_check_mark: ${vStreamUserCheck.displayName} added to list \nhttps://vstream.com/c/${vStreamUserCheck.displayName}`;
+                            let returnMsg = `:white_check_mark: ${vStreamUserCheck.username} added to list \nhttps://vstream.com/c/${vStreamUserCheck.username}`;
                             console.log(returnMsg);
                             const streamNotificationChannel = await getGuildSetting(guildId,'notificationChannelId');
                             if(streamNotificationChannel) {
@@ -80,7 +80,7 @@ module.exports = {
                     else { 
                         console.log(`vStreamStream does not exist in guild settings for ${guildId}`);
                         vStreamStreamsList = [vStreamStream];
-                        await interaction.reply({ content: `:white_check_mark: ${vStreamUserCheck.displayName} added to list \nHint: Use /vstream discordchannel to set a channel for live notifications. \nhttps://vstream.com/c/${vStreamUserCheck.displayName}`, ephemeral: true});                                                                           
+                        await interaction.reply({ content: `:white_check_mark: ${vStreamUserCheck.username} added to list \nHint: Use /vstream discordchannel to set a channel for live notifications. \nhttps://vstream.com/c/${vStreamUserCheck.username}`, ephemeral: true});                                                                           
                     }
                     await setGuildSetting(guildId, 'vStreamStreams', vStreamStreamsList);
                     console.log(`Updated vStreamStreams for guild ${guildId} to ${vStreamStreamsList}`);
