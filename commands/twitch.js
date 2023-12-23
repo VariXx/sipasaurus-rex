@@ -44,26 +44,29 @@ module.exports = {
 
         if(discordChannel) {
             await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
-            await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id})`, ephemeral: true});
+            await interaction.reply({ content: `:white_check_mark: Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id}) \nTest message sent to channel.`, ephemeral: true});
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
+            testMsg = `:white_check_mark: Test`;
+            if(botSettings.botIcon) { testMsg = `${botSettings.botIcon}`; }
+            await discordChannel.send(testMsg);            
         }       
 
         if(twitchStream) { 
             if(twitchStream.length > 4) {
                 // check if it's a valid twitch user 
                 const twitchUserCheck = await getTwitchUserInfo(twitchStream);
-                if(twitchUserCheck) {
+                if(twitchUserCheck !== undefined) { 
                     // get existing arry from guild setting and add value
                     let twitchStreamsList = await getGuildSetting(guildId, 'twitchStreams');
                     if(twitchStreamsList) {
                         if(twitchStreamsList.includes(twitchStream)) {
-                            let returnMsg = `${twitchStream} already exists in streams list`;
+                            let returnMsg = `:warning: ${twitchUserCheck.display_name} already exists in streams list`;
                             console.log(returnMsg);
                             await interaction.reply({ content: returnMsg, ephemeral: true});
                         }
                         else {
                             twitchStreamsList.push(twitchStream);
-                            let returnMsg = `${twitchStream} added to list`;
+                            let returnMsg = `:white_check_mark: ${twitchUserCheck.display_name} added to list \nhttps://twitch.tv/${twitchUserCheck.display_name}`;
                             console.log(returnMsg);
                             const streamNotificationChannel = await getGuildSetting(guildId,'notificationChannelId');
                             if(streamNotificationChannel) {
@@ -77,19 +80,19 @@ module.exports = {
                     else { 
                         console.log(`twitchStreams does not exist in guild settings for ${guildId}`);
                         twitchStreamsList = [twitchStream];
-                        await interaction.reply({ content: `${twitchStream} added to list \nHint: Use /twitch discordchannel to set a channel for live notifications.`, ephemeral: true});                                                                           
+                        await interaction.reply({ content: `:white_check_mark: ${twitchUserCheck.display_name} added to list \nHint: Use /twitch discordchannel to set a channel for live notifications. \nhttps://twitch.tv/${twitchUserCheck.display_name}`, ephemeral: true});                                                                           
                     }
                     await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
                     console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);
                 }
                 else { 
-                    let returnMsg = `${twitchStream} is not a valid twitch user`;
+                    let returnMsg = `:no_entry_sign: ${twitchStream} is not a valid twitch user`;
                     console.log(returnMsg);
                     await interaction.reply({ content: returnMsg, ephemeral: true});
                 }                                        
             }
             else { 
-                let returnMsg = 'twitch username must be at least 5 characters';
+                let returnMsg = ':warning: twitch username must be at least 5 characters';
                 console.log(returnMsg);
                 await interaction.reply({ content: returnMsg, ephemeral: true});                
             }
@@ -105,21 +108,21 @@ module.exports = {
                         const index = twitchStreamsList.indexOf(removeTwitchStream);
                         twitchStreamsList.splice(index, 1);
 
-                        let returnMsg = `${removeTwitchStream} removed from list`;
+                        let returnMsg = `:white_check_mark: ${removeTwitchStream} removed from list`;
                         console.log(returnMsg);
                         await interaction.reply({ content: returnMsg, ephemeral: true});
                         await setGuildSetting(guildId, 'twitchStreams', twitchStreamsList);
                         console.log(`Updated twitchStreams for guild ${guildId} to ${twitchStreamsList}`);                                                                                    
                     }
                     else {            
-                        let returnMsg = `${removeTwitchStream} is not in list`;
+                        let returnMsg = `:warning: ${removeTwitchStream} is not in list`;
                         console.log(returnMsg);
                         await interaction.reply({ content: returnMsg, ephemeral: true}); 
                     }
                 }
             }
             else { 
-                let returnMsg = 'twitch username must be at least 5 characters';
+                let returnMsg = ':warning: twitch username must be at least 5 characters';
                 console.log(returnMsg);
                 await interaction.reply({ content: returnMsg, ephemeral: true});                
             }
@@ -130,18 +133,18 @@ module.exports = {
             if(mentionEnabled) { // this doesn't actually do anything. setting a role enables the mentions. 
                 // await setGuildSetting(guildId, 'roleToPing');
                 // console.log(`Enabled mentions for guild ${guildId}.`);
-                await interaction.reply({ content: `Hint: use /twitch role <@role> to set a role`, ephemeral: true});
+                await interaction.reply({ content: `:white_check_mark: Hint: use /twitch role <@role> to set a role`, ephemeral: true});
             }
             else {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
                 console.log(`Disabled mentions for guild ${guildId}.`);
-                await interaction.reply({ content: 'Disabled role mentions', ephemeral: true});
+                await interaction.reply({ content: ':white_check_mark: Disabled role mentions', ephemeral: true});
             }
         }
 
         if(mentionRole) {
             await setGuildSetting(guildId, 'roleToPing', mentionRole.id);
-            await interaction.reply({ content: `Set ${mentionRole} to live notifications mention role`, ephemeral: true});
+            await interaction.reply({ content: `:white_check_mark: Set ${mentionRole} to live notifications mention role`, ephemeral: true});
             console.log(`Set ${mentionRole} to live notifications mention role for guild ${guildId}`);
         }
     },

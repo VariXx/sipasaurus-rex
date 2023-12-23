@@ -44,8 +44,11 @@ module.exports = {
 
         if(discordChannel) {
             await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
-            await interaction.reply({ content: `Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id})`, ephemeral: true});
+            await interaction.reply({ content: `:white_check_mark: Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id}) \nTest message sent to channel.`, ephemeral: true});
             console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
+            testMsg = `:white_check_mark: Test`;
+            if(botSettings.botIcon) { testMsg = `${botSettings.botIcon}`; }
+            await discordChannel.send(testMsg);
         }       
 
         if(vStreamStream) { 
@@ -57,13 +60,13 @@ module.exports = {
                     let vStreamStreamsList = await getGuildSetting(guildId, 'vStreamStreams');
                     if(vStreamStreamsList) {
                         if(vStreamStreamsList.includes(vStreamStream)) {
-                            let returnMsg = `${vStreamStream} already exists in streams list`;
+                            let returnMsg = `:warning: ${vStreamStream} already exists in streams list`;
                             console.log(returnMsg);
                             await interaction.reply({ content: returnMsg, ephemeral: true});
                         }
                         else {
                             vStreamStreamsList.push(vStreamStream);
-                            let returnMsg = `${vStreamStream} added to list`;
+                            let returnMsg = `:white_check_mark: ${vStreamUserCheck.displayName} added to list \nhttps://vstream.com/c/${vStreamUserCheck.displayName}`;
                             console.log(returnMsg);
                             const streamNotificationChannel = await getGuildSetting(guildId,'notificationChannelId');
                             if(streamNotificationChannel) {
@@ -77,19 +80,19 @@ module.exports = {
                     else { 
                         console.log(`vStreamStream does not exist in guild settings for ${guildId}`);
                         vStreamStreamsList = [vStreamStream];
-                        await interaction.reply({ content: `${vStreamStream} added to list \nHint: Use /vstream discordchannel to set a channel for live notifications.`, ephemeral: true});                                                                           
+                        await interaction.reply({ content: `:white_check_mark: ${vStreamUserCheck.displayName} added to list \nHint: Use /vstream discordchannel to set a channel for live notifications. \nhttps://vstream.com/c/${vStreamUserCheck.displayName}`, ephemeral: true});                                                                           
                     }
                     await setGuildSetting(guildId, 'vStreamStreams', vStreamStreamsList);
                     console.log(`Updated vStreamStreams for guild ${guildId} to ${vStreamStreamsList}`);
                 }
                 else { 
-                    let returnMsg = `${vStreamStream} is not a valid vStream user`;
+                    let returnMsg = `:no_entry_sign: ${vStreamStream} is not a valid vStream user`;
                     console.log(returnMsg);
                     await interaction.reply({ content: returnMsg, ephemeral: true});
                 }                                        
             }
             else { 
-                let returnMsg = 'vStream username must be at least 4 characters';
+                let returnMsg = ':warning: vStream username must be at least 4 characters';
                 console.log(returnMsg);
                 await interaction.reply({ content: returnMsg, ephemeral: true});                
             }
@@ -105,21 +108,21 @@ module.exports = {
                         const index = vStreamStreamsList.indexOf(removeVStreamStream);
                         vStreamStreamsList.splice(index, 1);
 
-                        let returnMsg = `${removeVStreamStream} removed from list`;
+                        let returnMsg = `:white_check_mark: ${removeVStreamStream} removed from list`;
                         console.log(returnMsg);
                         await interaction.reply({ content: returnMsg, ephemeral: true});
                         await setGuildSetting(guildId, 'vStreamStreams', vStreamStreamsList);
                         console.log(`Updated vStreamStreams for guild ${guildId} to ${vStreamStreamsList}`);                                                                                    
                     }
                     else {            
-                        let returnMsg = `${removeVStreamStream} is not in list`;
+                        let returnMsg = `:warning: ${removeVStreamStream} is not in list`;
                         console.log(returnMsg);
                         await interaction.reply({ content: returnMsg, ephemeral: true}); 
                     }
                 }
             }
             else { 
-                let returnMsg = 'vStream username must be at least 4 characters';
+                let returnMsg = ':warning: vStream username must be at least 4 characters';
                 console.log(returnMsg);
                 await interaction.reply({ content: returnMsg, ephemeral: true});                
             }
@@ -135,13 +138,13 @@ module.exports = {
             else {
                 await setGuildSetting(guildId, 'roleToPing', 'none');
                 console.log(`Disabled mentions for guild ${guildId}.`);
-                await interaction.reply({ content: 'Disabled role mentions', ephemeral: true});
+                await interaction.reply({ content: ':white_check_mark: Disabled role mentions', ephemeral: true});
             }
         }
 
         if(mentionRole) {
             await setGuildSetting(guildId, 'roleToPing', mentionRole.id);
-            await interaction.reply({ content: `Set ${mentionRole} to live notifications mention role`, ephemeral: true});
+            await interaction.reply({ content: `:white_check_mark: Set ${mentionRole} to live notifications mention role`, ephemeral: true});
             console.log(`Set ${mentionRole} to live notifications mention role for guild ${guildId}`);
         }
     },
