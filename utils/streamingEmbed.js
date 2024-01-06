@@ -15,7 +15,7 @@ async function streamingEmbed(twitchUsername, msgAuthor) {
         .setTitle(streamTitle)
         .setURL(channelUrl) // change this to get from twitchInfo 
         .setAuthor({
-            name: `${twitchInfo.display_name} is live`,
+            name: `${twitchInfo.display_name} is live on Twitch`,
             icon_url: twitchInfo.profile_image_url,
             url: channelUrl
         })
@@ -56,7 +56,7 @@ async function offlineStreamingEmbed(twitchUsername, msgAuthor) {
         .setURL(vodUrl) // change this to get from twitchInfo 
         // .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
         .setAuthor({
-            name: `${twitchInfo.display_name} was live`,
+            name: `${twitchInfo.display_name} was live on Twitch`,
             icon_url: twitchInfo.profile_image_url,
             url: channelUrl
         })
