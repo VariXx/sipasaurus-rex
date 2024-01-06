@@ -17,7 +17,7 @@ async function vStreamStreamEmbedMsg(vStreamUsername) {
         let urlTimestamp = Date.now();
         // const thumbnailUrl = streamInfo.thumbnail_url.replace(`{width}x{height}.jpg`, `1920x1080.jpg?${urlTimestamp}`);
         let streamTitle = escapeMarkdown(streamInfo.title);
-        let channelUrl = `https://vstream.com/c/@${vStreamUsername}`;
+        let channelUrl = `https://vstream.com/c/@${vStreamUsername}/live`;
         let streamDescription = ' ';
         if(streamInfo.description) { streamDescription = streamInfo.description; } // description value is null if not set
 
@@ -26,7 +26,7 @@ async function vStreamStreamEmbedMsg(vStreamUsername) {
         .setTitle(streamTitle)
         .setURL(channelUrl) 
         .setAuthor({
-            name: `${channelInfo.displayName} is live`,
+            name: `${channelInfo.displayName} is live on vStream`,
             icon_url: channelImage,
             url: channelUrl
         })
@@ -70,7 +70,7 @@ async function vStreamOfflineEmbedMsg(vStreamUsername) {
         .setURL(vodUrl) // change this to get from twitchInfo 
         // .setAuthor(`${msgAuthor} was live`, twitchInfo.profile_image_url, channelUrl)
         .setAuthor({
-            name: `${channelInfo.displayName} was live`,
+            name: `${channelInfo.displayName} was live on vStream`,
             icon_url: channelImage,
             url: channelUrl
         })
