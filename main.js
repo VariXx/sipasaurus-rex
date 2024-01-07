@@ -98,7 +98,10 @@ async function updateStreamEmbeds(streamUsername,guildSettings,guildId,msgChanne
             let embedMsgContent = ``;
             let roleMention = ``;
             if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
-                roleMention = await g.roles.fetch(guildSettings.roleToPing);
+                // roleMention = await g.roles.fetch(guildSettings.roleToPing);
+                // roleMention = await guildId.roles.fetch(guildSettings.roleToPing);                
+                let findGuild = await client.guilds.fetch(guildId);
+                roleMention = await findGuild.roles.fetch(guildSettings.roleToPing);
                 embedMsgContent = `${roleMention}`;
                 msgChannel.messages.edit(streamMessages[key].msgId.id, {
                     content: `${roleMention}`,
@@ -117,7 +120,10 @@ async function updateStreamEmbeds(streamUsername,guildSettings,guildId,msgChanne
         let embedMsgContent = ``;
         let roleMention = ``;
         if(guildSettings.roleToPing !== undefined && guildSettings.roleToPing !== 'none') {
-            roleMention = await g.roles.fetch(guildSettings.roleToPing);
+            // roleMention = await g.roles.fetch(guildSettings.roleToPing);
+            // roleMention = await guildId.roles.fetch(guildSettings.roleToPing);                
+            let findGuild = await client.guilds.fetch(guildId);
+            roleMention = await findGuild.roles.fetch(guildSettings.roleToPing);
             embedMsgContent = `${roleMention}`;
             const streamingMsgId = await msgChannel.send({
                 content: `${roleMention}`,
@@ -379,8 +385,8 @@ client.once('ready', async () => {
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
     
-    // checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
-    checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
+    checkStreamsTimer = setInterval(checkStreams,1*30000); // 30 seconds (1*10000)
+    // checkStreamsTimer = setInterval(checkStreams,10*60000); // 10 minutes (10*60000) 
     
 });
 
