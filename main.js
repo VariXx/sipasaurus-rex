@@ -358,8 +358,8 @@ client.once('ready', async () => {
         let twitchCheck = await twitchTokenHeartbeat();
         if(twitchCheck) { await logChannel.send(`:ballot_box_with_check: Twitch connected`); }
         // vStreamEnabled = true; // comment this out if the token refresh below is enabled
-        let vStreamTokenRefresh = await checkVStreamToken(); // comment this out when testing so it's not hammering vstream's API on startups 
-        if(vStreamTokenRefresh) { await logChannel.send(`:ballot_box_with_check: vStream connected`); } // comment this out when testing so it's not hammering vstream's API on startups 
+        // let vStreamTokenRefresh = await checkVStreamToken(); // comment this out when testing so it's not hammering vstream's API on startups 
+        // if(vStreamTokenRefresh) { await logChannel.send(`:ballot_box_with_check: vStream connected`); } // comment this out when testing so it's not hammering vstream's API on startups 
     }
     else { console.log(`Log channel not set, skipping lookup`); }    
     if(botSettings.checkTwitchClips) {
@@ -380,7 +380,7 @@ client.once('ready', async () => {
     checkTwitchConnectionInterval = setInterval(twitchTokenHeartbeat,60*60000); // 1 hour 
     
     // refreshVStreamTokenTimer = setInterval(checkVStreamToken,1*60000); // 60 seconds
-    refreshVStreamTokenTimer = setInterval(checkVStreamToken,45*60000); // 45 minutes    
+    // refreshVStreamTokenTimer = setInterval(checkVStreamToken,45*60000); // 45 minutes    
     
     // cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,1*40000); // 40 seconds
     cleanupStreamEmbedsTimer = setInterval(cleanupStreamEmbeds,10*60000); // 10 minutes (10*60000)
