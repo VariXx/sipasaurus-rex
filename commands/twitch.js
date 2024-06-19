@@ -43,12 +43,19 @@ module.exports = {
 // TODO - multiple settings at once throws an error. reply at the end of all if statements. 
 
         if(discordChannel) {
-            await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
-            await interaction.reply({ content: `:white_check_mark: Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id}) \nTest message sent to channel.`, ephemeral: true});
-            console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);
             testMsg = `:white_check_mark: Test`;
             if(botSettings.botIcon) { testMsg = `${botSettings.botIcon}`; }
-            await discordChannel.send(testMsg);            
+            try {          
+                await discordChannel.send(testMsg);  
+                await setGuildSetting(guildId, 'notificationChannelId', discordChannel.id); 
+                await interaction.reply({ content: `:white_check_mark: Set stream live notifications channel to ${discordChannel} (ID: ${discordChannel.id}) \nTest message sent to channel.`, ephemeral: true});
+                console.log(`Set stream notifications channel for guild ${guildId} to ${discordChannel.id}`);                    
+            }
+            catch(error) {
+                let testMsgError = `Error setting stream notification channel to ${$discordChannel} (${$discordChannel.id}) in guild ${guildId}. \n${error}`;
+                console.log(testMsgError);
+                await interaction.reply({ content: testMsgError, ephemeral: true});                
+            }
         }       
 
         if(twitchStream) { 
